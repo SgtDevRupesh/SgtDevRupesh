@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: lowlighter/metrics@latest
         with:
-          template: classic
+          template: terminal
           base: header, activity, community, repositories, metadata
           token: ${{ secrets.METRICS_TOKEN }}
           # Enable the isometric calendar plugin
