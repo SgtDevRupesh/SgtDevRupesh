@@ -17,3 +17,7 @@ jobs:
       - uses: lowlighter/metrics@latest
         with:
           token: ${{ secrets.METRICS_TOKEN }}
+          # Enable calendar plugin with isometric calendar display
+          plugin_calendar: yes
+          plugin_calendar_year: full # Shows a full-year calendar
+          plugin_calendar_isometric: yes # Enables the isometric display
