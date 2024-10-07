@@ -39,8 +39,8 @@ jobs:
           plugin_steam_user: "76561197960287930"
           # Recent Activity
           plugin_activity: yes
-          plugin_activity_limit: 5
-          plugin_activity_days: 0
+          plugin_activity_limit: 18
+          plugin_activity_days: 365
           plugin_activity_filter: all
           # Plugin Languages
           plugin_languages: yes
