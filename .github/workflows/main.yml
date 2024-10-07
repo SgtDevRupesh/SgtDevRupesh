@@ -19,6 +19,7 @@ jobs:
           template: classic
           base: header, activity, community, repositories, metadata
           token: ${{ secrets.METRICS_TOKEN }}
+          repositories: 100  # Ensures private repositories are included
           # Enable the isometric calendar plugin
           plugin_isocalendar: yes
           plugin_isocalendar_duration: full-year
@@ -53,3 +54,4 @@ jobs:
           plugin_languages_details: lines, bytes-size
           plugin_languages_limit: 14
           plugin_languages_analysis_timeout: 15
+          plugin_languages_repositories_visibility: all  # Ensure private repositories are included
