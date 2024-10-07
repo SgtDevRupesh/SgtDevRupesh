@@ -36,7 +36,7 @@ jobs:
           # Steam integration
           plugin_steam_token: ${{ secrets.STEAM_TOKEN }}
           plugin_steam: yes
-          plugin_steam_user: "76561197960287930"
+          plugin_steam_user: "76561198846755720"
           # Starlist
           plugin_starlists: yes
           plugin_starlists_languages: yes
