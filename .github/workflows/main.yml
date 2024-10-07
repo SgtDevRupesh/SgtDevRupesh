@@ -1,7 +1,7 @@
 name: Metrics
 on:
   # Schedule daily updates
-  schedule: [{cron: "0 0 * * *"}]
+  schedule: [{cron: "0 */3 * * *"}]
   # (optional) Run workflow manually
   workflow_dispatch:
   # (optional) Run workflow when pushing on master/main
@@ -20,14 +20,9 @@ jobs:
           base: header, activity, community, repositories, metadata
           token: ${{ secrets.METRICS_TOKEN }}
           repositories: 100  # Ensures private repositories are included
-          repositories_affiliations: owner, collaborator  # Include both public and private repos
           # Enable the isometric calendar plugin
           plugin_isocalendar: yes
           plugin_isocalendar_duration: full-year
-          plugin_lines: yes
-          plugin_lines_history_limit: 1
-          plugin_lines_repositories_limit: 4
-          plugin_lines_sections: base
           plugin_traffic: yes
           # Wakatime integration
           plugin_wakatime: yes
@@ -39,12 +34,6 @@ jobs:
           plugin_steam_token: ${{ secrets.STEAM_TOKEN }}
           plugin_steam: yes
           plugin_steam_user: "76561198846755720"
-          # Starlist
-          plugin_starlists: yes
-          plugin_starlists_languages: yes
-          plugin_starlists_limit_languages: 14
-          plugin_starlists_limit_repositories: 20
-          plugin_starlists_only: Awesome
           # Plugin Languages
           plugin_languages: yes
           plugin_languages_colors: rainbow
