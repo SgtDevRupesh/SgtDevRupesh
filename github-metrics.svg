@@ -2318,7 +2318,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                 <path d="m10.41.24 4.711 2.774c.544.316.878.897.879 1.526v5.01a1.77 1.77 0 0 1-.88 1.53l-7.753 4.521-.002.001a1.769 1.769 0 0 1-1.774 0H5.59L.873 12.85A1.761 1.761 0 0 1 0 11.327V6.292c0-.304.078-.598.22-.855l.004-.005.01-.019c.15-.262.369-.486.64-.643L8.641.239a1.752 1.752 0 0 1 1.765 0l.002.001ZM9.397 1.534l-7.17 4.182 4.116 2.388a.27.27 0 0 0 .269 0l7.152-4.148-4.115-2.422a.252.252 0 0 0-.252 0Zm-7.768 10.02 4.1 2.393V9.474a1.807 1.807 0 0 1-.138-.072L1.5 7.029v4.298c0 .095.05.181.129.227Zm8.6.642 1.521-.887v-4.45l-1.521.882ZM7.365 9.402h.001c-.044.026-.09.049-.136.071v4.472l1.5-.875V8.61Zm5.885 1.032 1.115-.65h.002a.267.267 0 0 0 .133-.232V5.264l-1.25.725Z"/>
                             </svg>
-                            90 games
+                            91 games
                         </div>
                     </section>
                     <section>
@@ -2436,7 +2436,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                             <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z"/>
                                         </svg>
-                                        13 hours played
+                                        15 hours played
                                     </div>
                                 </div>
                                 <div class="infos">
@@ -2453,32 +2453,32 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                                 <path d="M3.217 6.962A3.75 3.75 0 0 1 0 3.25v-.5C0 1.784.784 1 1.75 1h1.356c.228-.585.796-1 1.462-1h6.864c.647 0 1.227.397 1.462 1h1.356c.966 0 1.75.784 1.75 1.75v.5a3.75 3.75 0 0 1-3.217 3.712 5.014 5.014 0 0 1-2.771 3.117l.144 1.446c.005.05.03.12.114.204.086.087.217.17.373.227.283.103.618.274.89.568.285.31.467.723.467 1.226v.75h1.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H4v-.75c0-.503.182-.916.468-1.226.27-.294.606-.465.889-.568.139-.048.266-.126.373-.227.084-.085.109-.153.114-.204l.144-1.446a5.015 5.015 0 0 1-2.77-3.117ZM4.5 1.568V5.5a3.5 3.5 0 1 0 7 0V1.568a.068.068 0 0 0-.068-.068H4.568a.068.068 0 0 0-.068.068Zm2.957 8.902-.12 1.204c-.093.925-.858 1.47-1.467 1.691a.766.766 0 0 0-.3.176c-.037.04-.07.093-.07.21v.75h5v-.75c0-.117-.033-.17-.07-.21a.766.766 0 0 0-.3-.176c-.609-.221-1.374-.766-1.466-1.69l-.12-1.204a5.064 5.064 0 0 1-1.087 0ZM13 2.5v2.872a2.25 2.25 0 0 0 1.5-2.122v-.5a.25.25 0 0 0-.25-.25H13Zm-10 0H1.75a.25.25 0 0 0-.25.25v.5c0 .98.626 1.813 1.5 2.122Z"/>
                                             </svg>
-                                            5 / 86 achievements unlocked
+                                            7 / 86 achievements unlocked
                                         </div>
                                     </div>
                                     <div class="achievement">
-                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABgUEB//EACoQAAEEAQMDAgcBAQAAAAAAAAECAwQFEQAGIRIxQQdhEyIyM1FScRQj/8QAGAEBAAMBAAAAAAAAAAAAAAAAAAECBAX/xAAeEQACAgIDAQEAAAAAAAAAAAABAgASETETIUEiMv/aAAwDAQACEQMRAD8AeW9omG/AbMODNYmR4cx9+bXNpelOhAw64D2cGAeeU6Mb9369TMWjsGvpXn0OielS4CFAvjAS6T5WP27++qvqBIS/Hr4rypqpC4EZba5ieiQv/n8wdHhZ8j85Ggsbb8PdtlXQbG2cror6FsulSkBKShJUM5Aznjzrn2bkIz1ma1RaZIiTYm/nrhqqdnV9K06t0z1qbgIAD5yFOg9ws/t399KamzRNdnJbhwYkaHGlzY78KuQp6K6UHLrYxy4ck8fV2OuXytvRdp2VjBrLZyxisIQyypKkFKutIUcYz2586den0lTDE6G2uaH26+St1yEnqkIPw/lDQ8rHgfnGlm5AM9ZhkWmQId9cbGBCi08O5TZtIfgxwFy0Fb7JDYyVrHBd7ZH551L9FKvbu5NzwG5FUxKirK0L/wBLRcStSUK5BXkkHg/3jxrpF9VNz2owLtbHZjRYkORHn2Da3Y7xQOlp0nOXOQBn6u41mpdvP0l9GsIs6nYciTExVMpnNgF5Q+wR4WoH6e/tqxsGPydyFIrvyAfWus23tvcs5pmsYiRk9CECK0UBClISckowQByfc/3VL0MsIc2LcRKgWbjTEGQnriIKH3iW+ChZ7O98DwedKrnbj93fS58ydTPuS5ioqWzObI+MB9gDytKQPl78dtatv1LcBqQPi1shmTFlw48evsG0OyHgg9TLRGML4OccpPJ0Fi35O4Yiu/J//9k=" alt="" />
+                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAwUGBAf/xAApEAABBAECBgEEAwAAAAAAAAABAgMEBREGIQAHEhMxQSIUIzJhFVFT/8QAFgEBAQEAAAAAAAAAAAAAAAAAAQAE/8QAGhEBAQEBAQEBAAAAAAAAAAAAAQIAIRESMf/aAAwDAQACEQMRAD8AYa71fLp7SPFiR6yXHkwoU59+dVt96S8GwQ66D4cGAQD+J2HCyr11qK0kLdRA063ES/8AXSJsmvQhlL4yA6VeSsYwFDcnYHccbObFbDMutuJbljNCYEVMmPNSlh1X2vh1kkdbxJ6lITsADn9wU2dO1AuNECSlhsn6eDER8UnGSpSjgE4A3Ow9DjNdI7VMjJzU7fMu2ilK5EShW+mSqY221WISUvnbvEndKyPf5b78NuXutJ19byosqNVRI0SFNnNO19W2XorxQcutDclw5JO2VHY8RjVDV17HfvnlyHdlNwYyj1Oj2Bjc+c9Rwnbil5aWMux1W699I7Xxo1NMbZbqmB3UfbGVI2+TxwMesgADhi/p5q5AeYvManmW2rYYcVKjwodTD7z1q78owKN+6rfLhxuEglRzgHhPaSmZEGFW6YgSVtokdDdmtRaJd6SSEJOUpSUjJz1LUAM42HFtq7TEu+tK8O2UGHTwY0OK7Fm2iFORHy2B23d8l05ABzlXogcZ9SacubCs/hIi9Owq5qSmJlVi0XhJ8paJAw2o+Q2jB336vdcq/mJo8O7nCIMCqecbnPLtblRyuP3ulkH13T5OMfidyD4HFLyqbsDq+zU9HlIS/WTFdmsAaXntgBLONkrxgJP94J4Ezyvs320NLk0DL5kGE2WbJshb48tFP+g9pG/64e8vdJWlJYyHp02umQ5UKbCZjwbZHdkvhsgtNH0sYI23T74IhHNVPj3f/9k=" alt="" />
                                         <div>
                                             <div class="name">
-                                                <div>Nemesis</div>
-                                                <div class="unlocked">17 Jun 2024</div>
+                                                <div>Accurate Fire</div>
+                                                <div class="unlocked">14 Nov 2024</div>
                                             </div>
-                                            <div class="description">Get 'Avenger' 5 times</div>
+                                            <div class="description">Get 'Triple Strike'</div>
                                         </div>
                                     </div>
                                     <div class="achievement">
-                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABgUHCP/EACwQAAEDAgUEAAUFAAAAAAAAAAECAwQFEQAGEyExBxIiURQVMkFiF0JSccH/xAAYAQADAQEAAAAAAAAAAAAAAAABAgQAA//EAB0RAAICAgMBAAAAAAAAAAAAAAECABEDQRIhMSL/2gAMAwEAAhEDEQA/AKfUfPFWodfEOnpgvMuxYct12ZTG9V90Ngh1wECyxYHceNrC1sGB1UzFdatOjlS3xKUflzd1PAbOH2sWHlzti71LZqMbOjM+EX3CabGClzUWe2QPrT/PbcW52tgTUGITtMflz/hqbJaXpq7HEgqV7LX+pt/RxMcn1VytUHEEiN6DnLNdUW2sNUgXeMpi1ObuXzcF0elc3VyfeGtNqNUTWYkOYmEylECTPLkWnIL8Z1baiHEJAPmQSSALqKrG+C3RiuUGmxS7PnU6dIaJaQoEN6Q3F7KN9wfWL1IrDma8+TqmwiXFbiwZLSmoQS4+0ewpBHbcFZsSnm+2EVm5Ak78gYLRoamb9banVoecWkw3ZrKE02IS3KCVvBWnv3m31+zc73xIomd2zJYNSpMZTTTRSEtoBX3H911cn7b4a9T8hVrMGYxMpxgMxmYsOI41Mqbesy7pgBtwkm6zcC5PlyL3wU/SPM/ctPfRu5D4iqHzJu4ePDZ/M3Hjzvjq2MNqBWFDuKco1WBmatmEuDBpzIGsXpumB2EpSEjb6rn3jYKc/lalQJlIocphyoyGH1FilqQJDpQg37SnYKF7An7457R0hzDdCXHaOpS3zFSn5i3u8L3bH5ix8edsKumvT+p5fzEZ0z4F1l2LMiNtQ6m3qvu6ZBbbIIssWO4PjybWxkQIehFeiPZ//9k=" alt="" />
+                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAABgIFBwT/xAArEAABBAEDBAEDBAMAAAAAAAABAgMEBREGEiEAByIxExQVMiNBQlIkUXH/xAAXAQEBAQEAAAAAAAAAAAAAAAACAQME/8QAGhEAAgMBAQAAAAAAAAAAAAAAAQIAAxExUf/aAAwDAQACEQMRAD8AhrfWF2xr+q01SChU3aRIEpyZcVjaVPPlvIefyOFjaCOMpPA64NO671HN1v8AZb37K2l192X88GiRILstoHa4P7K8fz9gY5HR3vd8Dvcmu+qMxbv2uucC5wCXiAnKvlT/AHxkkf7z04tZgesKict1CT9Q6r5k4QAj4DzkYAGMdc11xrOAezeusMNheL3I1YzqVutso1HCcW4udFWqmbyuSpJCXBzwtR4Kh5ft0k7fasup10qBeqoGAzFsZbQqqtsyIjqUHc+2APzKt3A5Vjnoy1eadla1Ny5JU+/UwS1AjJaUovyVKUQ4njGxCTu3HAztx1X9hkx4+vZ22RMfsFVM5xb1d5LaPx5wyP5uZ9ftnHvpVszYTIygA5NJ7zUV83Qx7XTmmos0uVsePPlTQZNrHSlA8VpJwk4/JaQTnJPHPQ2qRUU9RCrZhjaqsw99TFhskuw4eU8pWpJ/yCMk/GnjjGT662pyuhOKanV9mjSt7XRIcMy3bFt/etSBtizGyfNQJABPkc5SR66J6t7dV2r4jk96VSaZ1dFmiKow5qHYcqSeQlSOFIcV7xjeM/y99Nl2FWzsCXAi2LrtjqFSJ7kptpMhaVhG5tJCA5FWnCS0CRuYUApP/R1bdso1BO1payalqxNpHqpiVrqGtgkpUkpGMeLMjgFJHirIOEn3e6d7WQbFDUvXuooE58yDGTVV8pCEOy0jybW6SFLeI4UBtJAGSffTam/TopEWMaCsp32JUSHQ0spsyJbwQQpP1GQA6MHhAJBOSo46KIwOkyswIwT/2Q==" alt="" />
                                         <div>
                                             <div class="name">
-                                                <div>Just a Scratch</div>
-                                                <div class="unlocked">17 Jun 2024</div>
+                                                <div>Fully Modified</div>
+                                                <div class="unlocked">14 Nov 2024</div>
                                             </div>
-                                            <div class="description">Get the 'Adamant' award 5 times</div>
+                                            <div class="description">Purchase 50 modifications</div>
                                         </div>
                                     </div>
                                     <div class="achievement">
                                         <div>
-                                            <div class="description ellipsis">+3 others...</div>
+                                            <div class="description ellipsis">+5 others...</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2489,7 +2489,7 @@
             </section>
             <footer>
                 <span>These metrics include private contributions</span>
-                <span>Last updated 14 Nov 2024, 18:24:45  with lowlighter/metrics@3.34.0</span>
+                <span>Last updated 14 Nov 2024, 21:16:54  with lowlighter/metrics@3.34.0</span>
             </footer>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" id="metrics-end"></div>
