@@ -2442,15 +2442,15 @@
                     </h2>
                     <div class="medias largeable-flex-wrap">
                         <div class="media largeable-width-half">
-                            <img src="data:image/jpg;base64,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" alt="" />
+                            <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCABAAEADASIAAhEBAxEB/8QAHAAAAgMAAwEAAAAAAAAAAAAABAYDBQcAAQgC/8QALRAAAgIBBAECBQIHAAAAAAAAAQIDBAUAERIhBjFBExQiMmFRcQcVI0KBobH/xAAYAQADAQEAAAAAAAAAAAAAAAADBAUCAf/EACIRAAICAQUAAgMAAAAAAAAAAAECAAMRBBIhIjETQQUyQv/aAAwDAQACEQMRAD8A2y5KKzkSDtRvqGS/VaNWk6LdeuiMtg5shZMscv0EAaDt+I2Gij4SfYd9SqPiX7jNzFoEbEUk+8kbKfRe/u0Hkofg12m4mQH04n/WiT45cEgLlpE32PE/80TZ8Ym5oRKyg+oJ604t1efYm+n3SitQfBSN2UmVwNh+mjsbEMeVZxuz+2u1wliOZpJuTgdL3qE4maKQySsxc/avLWmuqY9TxOJojWcwrM5aaAmMQMkrqOBPvpZyyZApE9wrtKeOwG2rC9Rn5RSxs3xo25Hmd9C3YLuQl5WrEeyDdVA21Nd3FmV8hbVOI44PzKlbKqZFPfsdXM3kePSLaWcbSHiBy149wyXK80bNZliO/wBpY96eF8fzfkNJBWaZBEeXPl1oYAQexxyCZvFnKwnmlWQgkdbtvpYzGTDFjbtsoUb/AEttpOjxtuFIlmnkDgBN+R7I1JV8ZvSW5xPHPNGUB9ddr1CA8mYsQ44l8uRpWa5sHJloIeyA5Gq2W3TvqRVuyuyfUFEh31R+VwfyzGz1VhMMhX7D6nSZQyNWDyeJrCy10WNeW7bA6dWwImR5ACj5D7G+1cnjmPwxaDD2Zyd9CS5a4iszLKD+To+xmFitvPSMbxKgPFl3J0rZLzpMldSs1I1Dy2MjD6dHp1JZc44nLvx5x7HTN+GwTb2MTahWRR9r96i8YnyuNaTFzPsbH0h/YazyHJ37cxWSeSN26GzEaurnKtgJLM+THzUQJXs76h10v/csXpW4ys0HE2JKUrImVpsHYoPiryIbRPkPmd/w+pvlrNWxYn6hWJNuvbXmI5u5LbQyWmO7niFJHemCahlst5BRsv8AGtooAVS24HX50dtMvrSf2bqIb5P5Jdy2cNwuzTy7AJv0P8aGmszX8s8uSCQukSgdbA7aEqeNSSXpjkop4mdyEIbbY76prizY7JOqTExjotIeWnECuMCbCFJrHiNoTXJGkeJIeAVkYbkD9dOsOApTwK6NVsl2PaJ6DWO/w/O/kAknZuDAep61p1H5iHIStGroD/Zv9w/Gp+rVq/1MZQ7pmi5Sq9pCqEbHVnmYo1oQyyI7LvyI39RoStiq1OLndYKxPWpsh5HV2NdQroFA0yljjidZVTqIrymkImZ6jMdyRx6Opcd5jHSkWGGlZBHoeWvuWpLk+6qGMb++uHDtRdXnKMf20XdX9wPwunYQ7GZKxZyU1ji8e6/0kkO+7ar5aDXY2L13SeOQuzt2DvqwxiWpLJapXZiev2/Onzx/F04KXzN5W5knYE9M36axbfXSOs2veR+DYKPlWllj6J79tN8rywTyNHGAg63I32Gq21kKcFbdA0Cex399UlXLh7VhhI0tfiPQ6i6i+y89YXbsn//Z" alt="" />
                             <div class="about">
-                                <div class="name">War Thunder</div>
+                                <div class="name">Farming Simulator 25</div>
                                 <div class="infos">
                                     <div>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                             <path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/>
                                         </svg>
-                                        Action, Massively Multiplayer, Simulation, Free To Play
+                                        Simulation
                                     </div>
                                 </div>
                                 <div class="infos">
@@ -2458,7 +2458,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                             <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z"/>
                                         </svg>
-                                        15 hours played
+                                        53 hours played
                                     </div>
                                 </div>
                                 <div class="infos">
@@ -2475,32 +2475,32 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                                 <path d="M3.217 6.962A3.75 3.75 0 0 1 0 3.25v-.5C0 1.784.784 1 1.75 1h1.356c.228-.585.796-1 1.462-1h6.864c.647 0 1.227.397 1.462 1h1.356c.966 0 1.75.784 1.75 1.75v.5a3.75 3.75 0 0 1-3.217 3.712 5.014 5.014 0 0 1-2.771 3.117l.144 1.446c.005.05.03.12.114.204.086.087.217.17.373.227.283.103.618.274.89.568.285.31.467.723.467 1.226v.75h1.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H4v-.75c0-.503.182-.916.468-1.226.27-.294.606-.465.889-.568.139-.048.266-.126.373-.227.084-.085.109-.153.114-.204l.144-1.446a5.015 5.015 0 0 1-2.77-3.117ZM4.5 1.568V5.5a3.5 3.5 0 1 0 7 0V1.568a.068.068 0 0 0-.068-.068H4.568a.068.068 0 0 0-.068.068Zm2.957 8.902-.12 1.204c-.093.925-.858 1.47-1.467 1.691a.766.766 0 0 0-.3.176c-.037.04-.07.093-.07.21v.75h5v-.75c0-.117-.033-.17-.07-.21a.766.766 0 0 0-.3-.176c-.609-.221-1.374-.766-1.466-1.69l-.12-1.204a5.064 5.064 0 0 1-1.087 0ZM13 2.5v2.872a2.25 2.25 0 0 0 1.5-2.122v-.5a.25.25 0 0 0-.25-.25H13Zm-10 0H1.75a.25.25 0 0 0-.25.25v.5c0 .98.626 1.813 1.5 2.122Z"/>
                                             </svg>
-                                            7 / 88 achievements unlocked
+                                            9 / 45 achievements unlocked
                                         </div>
                                     </div>
                                     <div class="achievement">
-                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAwUGBAf/xAApEAABBAECBgEEAwAAAAAAAAABAgMEBREGIQAHEhMxQSIUIzJhFVFT/8QAFgEBAQEAAAAAAAAAAAAAAAAAAQAE/8QAGhEBAQEBAQEBAAAAAAAAAAAAAQIAIRESMf/aAAwDAQACEQMRAD8AYa71fLp7SPFiR6yXHkwoU59+dVt96S8GwQ66D4cGAQD+J2HCyr11qK0kLdRA063ES/8AXSJsmvQhlL4yA6VeSsYwFDcnYHccbObFbDMutuJbljNCYEVMmPNSlh1X2vh1kkdbxJ6lITsADn9wU2dO1AuNECSlhsn6eDER8UnGSpSjgE4A3Ow9DjNdI7VMjJzU7fMu2ilK5EShW+mSqY221WISUvnbvEndKyPf5b78NuXutJ19byosqNVRI0SFNnNO19W2XorxQcutDclw5JO2VHY8RjVDV17HfvnlyHdlNwYyj1Oj2Bjc+c9Rwnbil5aWMux1W699I7Xxo1NMbZbqmB3UfbGVI2+TxwMesgADhi/p5q5AeYvManmW2rYYcVKjwodTD7z1q78owKN+6rfLhxuEglRzgHhPaSmZEGFW6YgSVtokdDdmtRaJd6SSEJOUpSUjJz1LUAM42HFtq7TEu+tK8O2UGHTwY0OK7Fm2iFORHy2B23d8l05ABzlXogcZ9SacubCs/hIi9Owq5qSmJlVi0XhJ8paJAw2o+Q2jB336vdcq/mJo8O7nCIMCqecbnPLtblRyuP3ulkH13T5OMfidyD4HFLyqbsDq+zU9HlIS/WTFdmsAaXntgBLONkrxgJP94J4Ezyvs320NLk0DL5kGE2WbJshb48tFP+g9pG/64e8vdJWlJYyHp02umQ5UKbCZjwbZHdkvhsgtNH0sYI23T74IhHNVPj3f/9k=" alt="" />
+                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGgAAAgIDAAAAAAAAAAAAAAAABgcEBQACA//EAC0QAAICAQMDAQUJAAAAAAAAAAECAwQFABESBiExEwcWQWFxFDJkgpGio7HS/8QAGAEAAgMAAAAAAAAAAAAAAAAAAQIAAwT/xAAfEQACAgICAwEAAAAAAAAAAAABAgMEABExURIhYSL/2gAMAwEAAhEDEQA/AEVQpWL85iqoHcKXO7BQAPJ3Pb46tIulsrL9xKv5rkK/22tOl15WL/ypyH9y6PzhKmYyUKQhMeiUa0sgUcw/PYFu5Gx7j6621KqzAs7aAPW+vv3rFdvEehs4F+5Gc4hvRp8T8ft0H+9UuUx9nF3XqXoxHOgViFdXGzAMCCCQdwQdNrMdPRVMc0zZCIARlljVAT2j5bee3xX6jS562blnVP4SqP4U0LNeOJQ0b+W/msCMTsEayR7Pa4vZ2XHiWOKe7VkggMm/EyHiwBIB27KdF2VFHHZGWplc1jIchUjjqPGqzNxCKAO/p+SNt9tL3prLPgs9RykcKTvVk5iJ2Kh+xGxI7jzrOpcs+ez9/KywpA9uUymJGLBOwGwJ7nxquvclr7WPWucZkVx7wvrUq2ZyMdPG5jH2LMu/CNVlG+w3PcoB4GhfrBl94bEaSCT0EjrswBA5Iio22/zB1w6cy8uBzVbJV4kmkgJIRyQp3BHfb66iX7LXb1m1IoV55WlKr4BYk7D9dSxdnskLJwMKRxov55Of/9k=" alt="" />
                                         <div>
                                             <div class="name">
-                                                <div>Accurate Fire</div>
-                                                <div class="unlocked">14 Nov 2024</div>
+                                                <div>It's just the beginning</div>
+                                                <div class="unlocked">16 Nov 2024</div>
                                             </div>
-                                            <div class="description">Get 'Triple Strike'</div>
+                                            <div class="description">I've never felt happier than here.</div>
                                         </div>
                                     </div>
                                     <div class="achievement">
-                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAABgIFBwT/xAArEAABBAEDBAEDBAMAAAAAAAABAgMEBREGEiEAByIxExQVMiNBQlIkUXH/xAAXAQEBAQEAAAAAAAAAAAAAAAACAQME/8QAGhEAAgMBAQAAAAAAAAAAAAAAAQIAAxExUf/aAAwDAQACEQMRAD8AhrfWF2xr+q01SChU3aRIEpyZcVjaVPPlvIefyOFjaCOMpPA64NO671HN1v8AZb37K2l192X88GiRILstoHa4P7K8fz9gY5HR3vd8Dvcmu+qMxbv2uucC5wCXiAnKvlT/AHxkkf7z04tZgesKict1CT9Q6r5k4QAj4DzkYAGMdc11xrOAezeusMNheL3I1YzqVutso1HCcW4udFWqmbyuSpJCXBzwtR4Kh5ft0k7fasup10qBeqoGAzFsZbQqqtsyIjqUHc+2APzKt3A5Vjnoy1eadla1Ny5JU+/UwS1AjJaUovyVKUQ4njGxCTu3HAztx1X9hkx4+vZ22RMfsFVM5xb1d5LaPx5wyP5uZ9ftnHvpVszYTIygA5NJ7zUV83Qx7XTmmos0uVsePPlTQZNrHSlA8VpJwk4/JaQTnJPHPQ2qRUU9RCrZhjaqsw99TFhskuw4eU8pWpJ/yCMk/GnjjGT662pyuhOKanV9mjSt7XRIcMy3bFt/etSBtizGyfNQJABPkc5SR66J6t7dV2r4jk96VSaZ1dFmiKow5qHYcqSeQlSOFIcV7xjeM/y99Nl2FWzsCXAi2LrtjqFSJ7kptpMhaVhG5tJCA5FWnCS0CRuYUApP/R1bdso1BO1payalqxNpHqpiVrqGtgkpUkpGMeLMjgFJHirIOEn3e6d7WQbFDUvXuooE58yDGTVV8pCEOy0jybW6SFLeI4UBtJAGSffTam/TopEWMaCsp32JUSHQ0spsyJbwQQpP1GQA6MHhAJBOSo46KIwOkyswIwT/2Q==" alt="" />
+                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGQAAAwADAAAAAAAAAAAAAAAABgcIAgQF/8QALRAAAgECBAQFAwUAAAAAAAAAAQIDBBEABQYSByExQRMUUWFxIiTBMkJSkdH/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAwIE/8QAJBEAAQMCBgIDAAAAAAAAAAAAAQIDEQASBBNBYYHwIVFxodH/2gAMAwEAAhEDEQA/AETRUlRXVUdNRxNNPIbKijmf8Hvgsm4a6lSoWKKkhmUoG8RZ1VRfqPqINx8Y3ODWaR0mpvIy0qyCsFhOFu0RUXuT/D19ORw+6meGjgSUQS1G82WR7xxn4/c3zyGLMtJcmVefUVnLxTrgbw7dwOpMAbVLGf5FmWn6tabNqV6eR13IbhldfVWHI/jHMxSvEfI31Noqoiy6JHqkMdXTozC+4Ha6KT3IJHvYYmuRGjkZJFZHUlWVhYgjqCOxxNabFFPe6URfBDiYIJBG47NGfCbOMqybVIfOt6U9QggEwA2xkupO6/RTYAntik6bbMiTsIJJJfBvKAsl95JYBuYItyFuVhiOME+l9d6h01GkOW126kQER0tSvixRm97qp6G/p6nBKrTMTVVuulnKbVbuPgj8PFUhmMASik8s7wxMGd4FJKMA9he569P6wjOMq5XHm0KQndnYH3nh/pUW+kOe8n464yzTi/n9XSyQ0tNQ0BZVVZYQzOljc2LEjmfblhdO7SSPJIzPI5LMzG5YnqSe5wU4ViI15roGNdXh8l6FKmZ4H3M+fUV//9k=" alt="" />
                                         <div>
                                             <div class="name">
-                                                <div>Fully Modified</div>
-                                                <div class="unlocked">14 Nov 2024</div>
+                                                <div>Help me to help you</div>
+                                                <div class="unlocked">16 Nov 2024</div>
                                             </div>
-                                            <div class="description">Purchase 50 modifications</div>
+                                            <div class="description">Sure, I can take care of that, neighbor.</div>
                                         </div>
                                     </div>
                                     <div class="achievement">
                                         <div>
-                                            <div class="description ellipsis">+5 others...</div>
+                                            <div class="description ellipsis">+7 others...</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2511,7 +2511,7 @@
             </section>
             <footer>
                 <span>These metrics include private contributions</span>
-                <span>Last updated 25 Nov 2024, 06:27:17  with lowlighter/metrics@3.34.0</span>
+                <span>Last updated 25 Nov 2024, 09:21:03  with lowlighter/metrics@3.34.0</span>
             </footer>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" id="metrics-end"></div>
