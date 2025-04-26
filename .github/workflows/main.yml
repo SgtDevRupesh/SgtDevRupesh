@@ -18,7 +18,7 @@ jobs:
         with:
           template: classic
           base: header, activity, community, repositories, metadata
-          token: ${{ secrets.GHUB_TOKEN }}
+          token: ${{ secrets.METRICS_TOKEN }}
           repositories: 100  # Ensures private repositories are included
           # Enable the isometric calendar plugin
           plugin_isocalendar: yes
