@@ -2431,7 +2431,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                             <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z"/>
                                         </svg>
-                                        4 hours played
+                                        6 hours played
                                     </div>
                                 </div>
                                 <div class="infos">
@@ -2448,32 +2448,32 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                                 <path d="M3.217 6.962A3.75 3.75 0 0 1 0 3.25v-.5C0 1.784.784 1 1.75 1h1.356c.228-.585.796-1 1.462-1h6.864c.647 0 1.227.397 1.462 1h1.356c.966 0 1.75.784 1.75 1.75v.5a3.75 3.75 0 0 1-3.217 3.712 5.014 5.014 0 0 1-2.771 3.117l.144 1.446c.005.05.03.12.114.204.086.087.217.17.373.227.283.103.618.274.89.568.285.31.467.723.467 1.226v.75h1.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H4v-.75c0-.503.182-.916.468-1.226.27-.294.606-.465.889-.568.139-.048.266-.126.373-.227.084-.085.109-.153.114-.204l.144-1.446a5.015 5.015 0 0 1-2.77-3.117ZM4.5 1.568V5.5a3.5 3.5 0 1 0 7 0V1.568a.068.068 0 0 0-.068-.068H4.568a.068.068 0 0 0-.068.068Zm2.957 8.902-.12 1.204c-.093.925-.858 1.47-1.467 1.691a.766.766 0 0 0-.3.176c-.037.04-.07.093-.07.21v.75h5v-.75c0-.117-.033-.17-.07-.21a.766.766 0 0 0-.3-.176c-.609-.221-1.374-.766-1.466-1.69l-.12-1.204a5.064 5.064 0 0 1-1.087 0ZM13 2.5v2.872a2.25 2.25 0 0 0 1.5-2.122v-.5a.25.25 0 0 0-.25-.25H13Zm-10 0H1.75a.25.25 0 0 0-.25.25v.5c0 .98.626 1.813 1.5 2.122Z"/>
                                             </svg>
-                                            7 / 32 achievements unlocked
+                                            9 / 32 achievements unlocked
                                         </div>
                                     </div>
                                     <div class="achievement">
-                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGQAAAwADAAAAAAAAAAAAAAAABAUGAQMI/8QALhAAAgECBQMCAwkAAAAAAAAAAQIDBBEAEhMhUQUxQQYVFGGBIiM0UmJxcqHR/8QAFwEBAQEBAAAAAAAAAAAAAAAABAABAv/EABsRAAICAwEAAAAAAAAAAAAAAAECAAMEETEi/9oADAMBAAIRAxEAPwDnPSaZSiAlmFgAL4ee3VvXety6ETU6MqsXmUgABVU/vuO2NPRIpGem+EiElXNUaCEuVCgoSTtxufpi0oKOCGJY6RjVAMI2rayVysjXsdNB2UHa548nB7MtqdhOxdOMH0W5I+KkrfT/AF0GogacCKQBoQSCGRlB+W5wjWNokVGBDKLG+LTrMKygq0jU+c2SenlcKD2GZSex5/u+2Jaszs0rVEbR1KTGOQFs1yFG+Oq8prdB+yuxgmyvI09NyMgGmfviZhH/AC0f8vhl7jSn2IvDUvCmjkySqFVhlH2hl5B884mIJHEcSQSNFURz6yMBfcLa3f5YNjqnkOoiNSSMc7wtHniLeStjcX4we1PRMRjsCgEMSWB6bqRjjnSIl7akgILEkDKAB5y/W3GAvUP4+oBN2WRFc/qES3xh6x4GE2VqqZDmiRY8kSt+Y33YjxhfJcB1eR5ZWlMjuwAuSBfzzjal97le4FZWf//Z" alt="" />
+                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAABAQADAAAAAAAAAAAAAAAABgUCAwj/xAAnEAABAwMDAwUBAQAAAAAAAAABAgMEBRExAAYhEhNBFFFhcZEiI//EABkBAAIDAQAAAAAAAAAAAAAAAAECAAMEBf/EACQRAAEDAwMEAwAAAAAAAAAAAAECBBEAAzESEyFBUZHwMmFx/9oADAMBAAIRAxEAPwDnIGxuNO5G417ilw2o8FPdQwQ4HFWSkA8m/tz96H0uEqoTUMIUEA8qWrCEjJ0ronplVqLDo0R1TPcCHpfJUoeeRgcfA0inSrElGYq1DJLmNzE+a2R68zQJ8lMqD1OKZs32lApXc8G/gcH50FUbkk+TfTKT6N2rPwK4y42C4ptmZgjk258j90YqsFymz3YrxCig8LThaTgjUDpV8jXmPNBbJLadv4zH59Gqu1XVJMnsx2HHkI6v9ASVi+M4vb90i25vaU/U4UJUaK2y84ls9FwRf2F7aEUme5TZ7UloBRTwpJwpJyNLmZkZbiZNDlRmf67ior8dClIVk9JyOfmw8HWJzaSSSpMz17V0Wl5WkBCoIyOOR7msKrvKW3JkxRGjOMtuKSAu5vyfGNRtzuKK2RJZZS+pPUFIBSUi+LYzf81S78ZiQuRWJbbyUnrRGZaSCtWRfzn34+9G6tPcqU92U8Akr4CRhKRgDTN7adQKUxHXvQd3laSFqknA44HuK//Z" alt="" />
                                         <div>
                                             <div class="name">
-                                                <div>Eye Spy</div>
+                                                <div>Friendly!</div>
                                                 <div class="unlocked">23 Jul 2025</div>
                                             </div>
-                                            <div class="description">Get hover data on 10 enemy vehicles with the gimbal camera.</div>
+                                            <div class="description">Deal significant damage to a friendly unit.</div>
                                         </div>
                                     </div>
                                     <div class="achievement">
-                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAABAQADAAAAAAAAAAAAAAAABQYDBAj/xAAsEAABAwMDAwMCBwAAAAAAAAABAgMEAAUREiExBiJBE2FxUZEUIzOhscHw/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAQB/8QAJREAAQMDAwMFAAAAAAAAAAAAAwABAhExMgQSEyGx8CNBQ3GR/9oADAMBAAIRAxEAPwDnKqyddnOppsJqPDSHW2Clz1FdqQDurP03+anrXCVPmoYStLYO63FcISOSaaducK3OelZWBqQNKpK1dy/rx4+wpHVkBL0slSAbZzejeWWa33JPTVylCXDC3FsYb9JQKV5Oxz4Gx96lCckk+d6p4c2DdHkx7416a3RpblIOCg+M58Z+RQd1gOW2e7FeIUUHZaeFJPBFJauZ5ULl3Q4/kg9Y9vtJ9JBBkSNZIwEEkDJ06t/30029NhpZmKanJC0fpp0I7dvjff8A2akbTPcts9qU0Aop2Uk8KSeRTU+DbbosyrPJQwtZyuK6MFJPOPb7iojDbkrKzqnTlfi2wu3tb8SUa9wrl+S80YqUJyO9J1+248c0B1KFB6MXM6yhXIwcajg/zW3b4lutj/4i7SEvFvuQw0MlavGc/wB4FEXee5c7g7KeASV7BI4SkcCtENmJWFlhyycW0mT+dV//2Q==" alt="" />
+                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGgAAAgIDAAAAAAAAAAAAAAAABQYCBAMHCP/EAC8QAAIBAwMCAwUJAAAAAAAAAAECBAMFEQAhMSJBBhITUWGBkcEUIzNCcaGx0fD/xAAYAQACAwAAAAAAAAAAAAAAAAAAAgEDBP/EACMRAAEDBAIBBQAAAAAAAAAAAAEAAgMREiIxQXFCBBRhkbH/2gAMAwEAAhEDEQA/AOcgcHT8fEhv8qJSoQlFZKJFQVG6QAdyD7N/10mWqE9wm06CMEB3Z24RRydHft8OFJpx7NH4YU3ku3W+Tg/D9tUTP8WipTj0bJxWU0b+9IzT8Qx7BMkCTCL1Wo/dimwKvk7HPYbH3618x8zEnuc6Z4UyBc64i3ul5GfopykO6Htn3fMaB3WBUts+rFrEMUOzrwyngjRE7wcKFHs2QNuiNW1+vgq94cRqiz1pfjej0457/XGpWR48Z2MyiHquAKC/mD52OOw450Otkx4ExK6KHA2dCcB1PI0wtDtFwmpMt0sxgWFSpGZQWVs52GR9RpJcXG7RWuDNrbdjjvlCbwaUiVUaMi03XKvTXksOSPb8PlrJ4nRkrRfV2qGluDzz/edXI8e2wJtSVdK/rBWLpHQdTHOcEf4fxoJc5rz5tSQ6hAcBUU5CKOFGiPJwpoKJsWuu2eOl/9k=" alt="" />
                                         <div>
                                             <div class="name">
-                                                <div>Where are we Dropping?</div>
+                                                <div>Logistician</div>
                                                 <div class="unlocked">23 Jul 2025</div>
                                             </div>
-                                            <div class="description">Deploy the spaceship escape pod.</div>
+                                            <div class="description">Have 10 barges active at once.</div>
                                         </div>
                                     </div>
                                     <div class="achievement">
                                         <div>
-                                            <div class="description ellipsis">+5 others...</div>
+                                            <div class="description ellipsis">+7 others...</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2484,7 +2484,7 @@
             </section>
             <footer>
                 <span>These metrics do not include all private contributions</span>
-                <span>Last updated 23 Jul 2025, 01:50:15  with lowlighter/metrics@3.34.0</span>
+                <span>Last updated 23 Jul 2025, 04:01:21  with lowlighter/metrics@3.34.0</span>
             </footer>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" id="metrics-end"></div>
