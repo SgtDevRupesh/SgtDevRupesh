@@ -2493,15 +2493,15 @@
                     </h2>
                     <div class="medias largeable-flex-wrap">
                         <div class="media largeable-width-half">
-                            <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCABAAEADASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAABwABBAYIBQMC/8QALhAAAQMDAgQEBgMBAAAAAAAAAQIDBAAFEQYSByFBURMVIjEIFFJhgZEWMnGh/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AB5oDSH8tc82vxKY6TtaaR6Vbh1NGqHYYTEdLbO4IAxzPsKp2lZjUeKlCQA3uPtyFW1u6p28yArpQSvJo3ZX7p/Jo30r/dRjdkjr+qXmyO5oJPk0b6V/ul5NG+lf7qN5sjuaQuyT1oPZyyxFtlKipSewNCHiLoZq0JXe7EVB1klbyFnduH2osLuqdnIgq6AdarepJ6H4byFDKCOfb80FDslwKghAVkqVgJHvRXi6C1I/GbdDKtriQUjHQ0EeCBdvuu7dEcQVtpcCnD0Arb82c/CnW2Ey0VNuKCFKHsABQB7Tlvf0zqJpjUrA+UkYTvUnkmu/cZmnU63iIbdZMc4zhPpok31t5bbfy0VmQ7nn4iAraPzXOlsWdu6wmZUFn5t3ASpKABuxQUibM04jW/rdYRACEkqx6c9a5Gso6NR3xELSzKXG2gFlxtPI5oi630jGv1pESO0yytKskpSATVgtMCNAisMstNIcbbSgqSkAnA60AEVw+1KlKl+CoKHsMULr/NcjqkRnSUuIUUqSe4rYUe4SVaglQ3Gj4DbQWlfTJrHXxINO6f1y+hlshl9IUlXTceZoJnw5ztNaVuMu43y6x233EBCN3TBorS+PNqHEaLbY8yMbAQkrkqGcHrzrFa85OVbsdRXyM0G5eI/E7T9ytrDGnryh6Z4n9GVEKIq0xuJGmENQmZUtkTkNI9Cxle7HPH3rEnCnVkDRuqGrrcreu4IbwUtgj3/NEi68cLLN1/Dv6NNqRGY27mDsyrH/ACgOzXFK1scRpMZbyjEcYQEHPIK61G0bxYsbEi4r1HcEQXfFUltDxPNIPIignJ442Z3iEnUX8bV8uEJQY52Z5de1UbjLrq2a9vyLla7Uu3YSEqQopwcf5QaTuvHq1xuIsWBFmRnbA6EhckD+pxzyaH3xLXzSusIUKTY7tHemMOEq2n3GOQrNYP3p0e4GcZ60DLGFYFN2B9ql3GC/CkeHJQUqIqJtPY0DcqXKltPaltPagVKltPaltPagf2PKkkeoCltPY17w4zsqQhphBUsmg//Z" alt="" />
+                            <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCABAAEADASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAABQABBAYHAwII/8QALxAAAQMCBAMGBgMAAAAAAAAAAQIDBAARBRIhMQZBYRMUIkJRcQcjUmKBkqGxwf/EABsBAAICAwEAAAAAAAAAAAAAAAUGAgQAAQMH/8QALREAAQMDAwMDAQkAAAAAAAAAAQACAwQFEQYSIRMxQRRhkUIyRFFScYGSoeH/2gAMAwEAAhEDEQA/APljoRTttrcWlLaSpSjYAc6dlC3XEttjMtRsAK0HAcHZwuL274C37XN/6HWpsZuKg94YMoFh/C6y0Hp6w0g+U70ej4XBihIS26snYhVHYEJUk95mgkeVA00oqlCEiyUJA5XG1VJK5rDtjGU3W7R89VEJqmTp55DQMnHuqfIgQ3klKmHU9Sqq/iPDRCs0UkD0OtajZPNCD+KVk/Qi3tXI3BzvpCIjQ8YOeufgLGTg2IhWVMVw22IG9cnMKmtNlx2OtLY3JrbLAGyUJv7VSPiNiaUJRAYACt3LDkayKpdI7aAqtz01Bb6Z07pScduO5QXgmCHpK5LidEj5fvVumkqCGkJJdve1ReHGURcMANggKJzUYwVoq7SS9YlRyp6Cr1RL0Ifcpas1uddK0QgkNHJP4Adsfuoonz0JCQzonpScxGehOdxqw56cqP6EkZRb2oXjTuYNxgQHFmx05ULjcJHBgYOf1T9cKKagpn1L62TDR7cnwO3krgmZNWAQtAB+2vQlzfrb/WmsAkJHIWpUX9FB+VefjUN1xzUOSVKnWIC2/wBaqPGeHnsW5mfM6o2c6CrbzzbGoeMth3CpKFAeJOp9K2KaNgywYK4VF0rKsBtRKXAHsVFwl3vOHNNNkEurKSByq2sthplDf0iqN8M21LcfcdN0IF0jrV81/N70JrZeo8DwF6Ho6gEFI6oP2nn+gkSEglWiBqTQFCzIkPSXR9qfxRqQ120dxsKy5hahbcCa232aVo8JuLprdDJFG7fIcLNWUldWxRwUkZc3OXdu/gc/KYC+trXpXB1uNK99znaeNH61Hld6ilsKykrVbaibayFxw12Uhz2G5U8ZlliIa3knI4Hyup2uNqh4wsN4ZIWd8uvtU02J38Nv5qscbzg1CbjIPzFkhftVhxwEKaMkKFwFjDOHy3GpKglp4Zcx2FaWlxtbedLiVNnZQNYVlsN/Y13ZmymiFJfdAGwzG1CpqYSHcCnG0alfboeg9m5o7eO620ONcnU04dbvcPJrNsN4kjqATPS5e1syVWFWBmTh0hvMJBy+gVrURbnH6giR1yB93P8AL/FaUut7hwXO4oI673vEHFi5Q2PDrpeoTj+HtouX1AjlmoRN4njxmuxhIKrG+a/Ou8FGIX73OyhF61O+6U/pmR7ASCec5A8I5iU9nDo6nZChmI0SPN0FZric1ydKU86b3Og9BTT5z858uPKJvsOQqNaw9f8AKsveXJaazav/2Q==" alt="" />
                             <div class="about">
-                                <div class="name">Arma 3</div>
+                                <div class="name">Carrier Command 2</div>
                                 <div class="infos">
                                     <div>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                             <path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/>
                                         </svg>
-                                        Action, Simulation, Strategy
+                                        Action, Adventure, Simulation, Strategy
                                     </div>
                                 </div>
                                 <div class="infos">
@@ -2509,7 +2509,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                             <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z"/>
                                         </svg>
-                                        1.77k hours played
+                                        11 hours played
                                     </div>
                                 </div>
                                 <div class="infos">
@@ -2526,32 +2526,32 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                                 <path d="M3.217 6.962A3.75 3.75 0 0 1 0 3.25v-.5C0 1.784.784 1 1.75 1h1.356c.228-.585.796-1 1.462-1h6.864c.647 0 1.227.397 1.462 1h1.356c.966 0 1.75.784 1.75 1.75v.5a3.75 3.75 0 0 1-3.217 3.712 5.014 5.014 0 0 1-2.771 3.117l.144 1.446c.005.05.03.12.114.204.086.087.217.17.373.227.283.103.618.274.89.568.285.31.467.723.467 1.226v.75h1.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H4v-.75c0-.503.182-.916.468-1.226.27-.294.606-.465.889-.568.139-.048.266-.126.373-.227.084-.085.109-.153.114-.204l.144-1.446a5.015 5.015 0 0 1-2.77-3.117ZM4.5 1.568V5.5a3.5 3.5 0 1 0 7 0V1.568a.068.068 0 0 0-.068-.068H4.568a.068.068 0 0 0-.068.068Zm2.957 8.902-.12 1.204c-.093.925-.858 1.47-1.467 1.691a.766.766 0 0 0-.3.176c-.037.04-.07.093-.07.21v.75h5v-.75c0-.117-.033-.17-.07-.21a.766.766 0 0 0-.3-.176c-.609-.221-1.374-.766-1.466-1.69l-.12-1.204a5.064 5.064 0 0 1-1.087 0ZM13 2.5v2.872a2.25 2.25 0 0 0 1.5-2.122v-.5a.25.25 0 0 0-.25-.25H13Zm-10 0H1.75a.25.25 0 0 0-.25.25v.5c0 .98.626 1.813 1.5 2.122Z"/>
                                             </svg>
-                                            45 / 123 achievements unlocked
+                                            11 / 32 achievements unlocked
                                         </div>
                                     </div>
                                     <div class="achievement">
-                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAwcBAgYI/8QALRAAAgEDAwQAAwkBAAAAAAAAAQIDBAURAAYSBxMhMRRhcRUWFzIzQVFSg3L/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A02w9oWi5bdttXW26OonnQvJI7OS5Lt5PnWsp+n+2+al7NTcQQTkvgDP11gfv8djbAsUktAwSWDEdXVMVgZuTHiqrl5GA9gBQM/mGkrvfrDeNw84jNJNAfSTAJCPpAp4n/QyaDpjcnTy29nu2O1UQqYpRIsEobt1KZ8xls5XI9MPRx7GdKuXbV1pqGor7jZ5aGEwTygMgDQOs4ES5Xyp4ecksGz+2l/sfrJd9v9uHvSwwKf04x3YD9YWOF/zZPpp1xb5O+NgXueG3v24oCHq6Zi8AYMp4sGw6Ng5wQR/DHQLzrS5HSjp+f6zyEZ9aJVdRbnbIx8JbrLI3HmzTUwIAyB4Gck5OiXWO2bq2xZbPfK2ahFtkcjtRnlkkjzkEaouz9qVE8clTuerYqCg5wIQASM+Cny0FKfqJc7pC3xdvs0bFOamGmABGSPIzkHI0Tocx/Bjeg84NUPX/ACmofZu04J5Hptz1Q5ARnhAgBUE48BPno1l+zNq7UutjslZLWpcJVcmWM8+WVXAwAPQ0H//Z" alt="" />
+                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGgAAAgIDAAAAAAAAAAAAAAAABQcBBgMECP/EACkQAAEDAwMCBQUAAAAAAAAAAAECAwQABRESEzEGIRRBUYGRMkJhcXL/xAAYAQACAwAAAAAAAAAAAAAAAAABAwACBP/EABwRAAEFAQEBAAAAAAAAAAAAAAEAAgMEERMhgf/aAAwDAQACEQMRAD8A5yo9bGLy5CEJiI54UP61L2ySlWnGD80Bxnt601LbGiXzp6KJLaw8lsAPIUUkKxjBI544pE8xiAIWivVZZ1r/AHFR7i1d48JyJIjLEZx5KgotkFSgCAB8mgdMC/wWbNalCMlalaTuOrWVHVj6e/H6pfcUYZTKNKk9ZlYhrPEQs6YO/ruL2ltB7NgHK/fgCmV0/wBRRn3QmCGkKZGpKEqynTjHA8/zSmrctEwwbiy+CQkHCv5PNUsQdATqbVtcSBn1XnqLqaMHVboRI3idwBWEAacY78kedUKb4UuaoiyUK+wjun3qJzoelLUk5QDhJ9Rnn3OawUYIBGBiFqz1JBC//9k=" alt="" />
                                         <div>
                                             <div class="name">
-                                                <div>Virtual Vehicle Inspection</div>
-                                                <div class="unlocked">18 Oct 2023</div>
+                                                <div>Top Gun</div>
+                                                <div class="unlocked">14 Jan 2026</div>
                                             </div>
-                                            <div class="description">Visited the Garage in VR Arsenal for the first time.</div>
+                                            <div class="description">Travel at high speed past the carrier bridge in a plane.</div>
                                         </div>
                                     </div>
                                     <div class="achievement">
-                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAABQcEBgP/xAAzEAABAwIEAwYCCwAAAAAAAAACAQMEBREABhIhEzFxByIyQUKBUWEUIzQ1NnJ0obGywv/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDmqfRJMyAEgAYMndRIbjhXXdfF73/bCkSix4bch+rRo5sNjxE0Ed0RLqqLvv5YQyz9wQvyl/cse1WkNNwn2yXU4bRaQFNRLsu9vh8+WAp0LKGT5upY9DiEgiBX71rEOpPV8FTBueMnZep+UarLg0mPHlMM8Rp1tTQgJCGyp3sdxTjaKK0jaIJI2CENtKpsnNMDdo34Ern6b/Q4CK5al2gwonCP7OTqu+lPrCTT18+mML9baeeqEWmAEl101QnlKzYjpRLovM7b7Dt80wOhsyYsNmdIkA3GQwWJpIQJdRXU0t3ui7Y2OSYLjaAZIoj4U4ZJp6WTb2wFnyx2gUypSYUOoaIFQbTT3zRWzTTZLH5XX0lb3wt2jv2yjW43DK/0Pia/JE1in84gTcqC22oASIC804RWXrtvhONmp6JQqnSm33pcac2LQsuIZcItQoigqpslk8PLpgP/2Q==" alt="" />
+                                        <img src="data:image/jpg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGgAAAgIDAAAAAAAAAAAAAAAABQYDBwAECP/EACgQAAICAQMDAwQDAAAAAAAAAAECAwQRAAUSITFRBhMiFDJBcWGBkf/EABcBAQEBAQAAAAAAAAAAAAAAAAADAQT/xAAdEQABBAMBAQAAAAAAAAAAAAABAAIDBBESIfAx/9oADAMBAAIRAxEAPwDnLU9QS+8FiTmXOMDzrK1aacMYYpJAuORRScfvGmz07tF2WgHMpq0fqEeacziJVHVWUkkfLGMDvqUsoYMlddTdsgcw4SncEomKSxlChwQe+dQab/Uu03YqUlj31s0DYYxSLZEy47KgOT8sE5H8Z0qzQSwhWlikRW+0spGf1nSKQPGQstl7pC5/UR2lWehZASZwJoSwh+7Hz7asTZt4rbdc2Gz9OslKFZYkj3GXksdhnGGkYAjlwPQkdB41UoJGcEgHvg99HthvXa1TFUPLCs6B4FVSpTqWyp758nxqFmHbvvmFWtPjEaefUG9V9x3zerKVIRUeJIZY6E3FZ5ll+LK+AA3AHJGf7zqvt3BWjFmCaBTZlKpM5dgOEf5wM/5rb3e7dkrSmcPDA0zIkJVVBjPUDiOnTiOugDtk9M4HYeNK0OvR7iWZuFi//9k=" alt="" />
                                         <div>
                                             <div class="name">
-                                                <div>New Dimension</div>
-                                                <div class="unlocked">8 Oct 2023</div>
+                                                <div>Down with the Ship</div>
+                                                <div class="unlocked">23 Jul 2025</div>
                                             </div>
-                                            <div class="description">Imported a 2D scenario into the Eden Editor.</div>
+                                            <div class="description">Execute the Self Destruct Sequence.</div>
                                         </div>
                                     </div>
                                     <div class="achievement">
                                         <div>
-                                            <div class="description ellipsis">+43 others...</div>
+                                            <div class="description ellipsis">+9 others...</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2562,7 +2562,7 @@
             </section>
             <footer>
                 <span>These metrics do not include all private contributions</span>
-                <span>Last updated 16 Jan 2026, 15:25:36  with lowlighter/metrics@3.34.0</span>
+                <span>Last updated 16 Jan 2026, 18:34:38  with lowlighter/metrics@3.34.0</span>
             </footer>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" id="metrics-end"></div>
