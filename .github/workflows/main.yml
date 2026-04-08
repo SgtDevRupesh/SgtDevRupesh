@@ -25,7 +25,7 @@ jobs:
           plugin_isocalendar_duration: full-year
           plugin_traffic: yes
           # Wakatime integration
-          plugin_wakatime: yes
+          plugin_wakatime: no
           plugin_wakatime_repositories_visibility: all
           plugin_wakatime_sections: time, projects, projects-graphs, languages, languages-graphs, editors, os
           plugin_wakatime_languages_ignored: markdown, plaintext, text, xml, yaml, JSON
@@ -33,7 +33,7 @@ jobs:
           plugin_wakatime_token: ${{ secrets.WAKATIME_TOKEN }}
           # Steam integration
           plugin_steam_token: ${{ secrets.STEAM_TOKEN }}
-          plugin_steam: yes
+          plugin_steam: no
           plugin_steam_user: "76561198846755720"
           # Plugin Languages
           plugin_languages: yes
