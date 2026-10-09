@@ -6,6 +6,7 @@ const CONFIG = {
   role: "Flight Simulation Engineer",
   tagline: ["Avionics, flight models and the tooling", "that keeps virtual aircraft in the air."],
   maxRepos: 150, // most recently pushed repos to inspect for your commits
+  bulkCommitLines: 10_000, // a single commit adding more than this is an import or generated code, not written lines
   listRepos: 8,
   hide: [], // "owner/name" entries that must never appear by name
   ignoredLangs: "html css scss tex less dockerfile makefile qmake lex cmake shell gnuplot batchfile powershell".split(" "),
@@ -25,10 +26,19 @@ const headers = {
 };
 
 async function gql(query, variables = {}) {
-  const res = await fetch(`${API}/graphql`, { method: "POST", headers, body: JSON.stringify({ query, variables }) });
-  const json = await res.json();
-  if (!res.ok || json.errors) throw new Error(JSON.stringify(json.errors ?? json));
-  return json.data;
+  // GitHub answers heavy queries with a 502/504 HTML page now and then; back off and retry those.
+  for (let attempt = 1; ; attempt++) {
+    const res = await fetch(`${API}/graphql`, { method: "POST", headers, body: JSON.stringify({ query, variables }) });
+    const body = await res.text();
+    if (res.status >= 500 && attempt < 4) {
+      await new Promise((r) => setTimeout(r, 3000 * attempt));
+      continue;
+    }
+    let json;
+    try { json = JSON.parse(body); } catch { throw new Error(`HTTP ${res.status}: ${body.slice(0, 80)}`); }
+    if (!res.ok || json.errors) throw new Error(JSON.stringify(json.errors ?? json));
+    return json.data;
+  }
 }
 
 async function pool(items, n, fn) {
@@ -88,14 +98,15 @@ async function fetchData() {
   const stats = new Map();
   const failed = [];
   const noContents = [];
+  const bulkSkipped = [];
   await pool(candidates, 4, async (repo) => {
     const [owner, name] = repo.nameWithOwner.split("/");
-    let commits = 0, additions = 0, deletions = 0, after = null;
+    let commits = 0, additions = 0, deletions = 0, bulk = 0, after = null;
     try {
-      for (let page = 0; page < 30; page++) {
+      for (let page = 0; page < 75; page++) {
         const d = await gql(`query($owner: String!, $name: String!, $author: ID!, $after: String) {
           repository(owner: $owner, name: $name) { isEmpty defaultBranchRef { target { ... on Commit {
-            history(first: 100, after: $after, author: {id: $author}) {
+            history(first: 40, after: $after, author: {id: $author}) {
               totalCount pageInfo { hasNextPage endCursor } nodes { additions deletions }
             } } } } } }`, { owner, name, author: v.id, after });
         const h = d.repository?.defaultBranchRef?.target?.history;
@@ -105,13 +116,17 @@ async function fetchData() {
           break;
         }
         commits = h.totalCount;
-        for (const n of h.nodes) { additions += n.additions; deletions += n.deletions; }
+        for (const n of h.nodes) {
+          if (n.additions > CONFIG.bulkCommitLines) { bulk++; continue; }
+          additions += n.additions; deletions += n.deletions;
+        }
         if (!h.pageInfo.hasNextPage) break;
         after = h.pageInfo.endCursor;
       }
     } catch (e) {
       failed.push(`${repo.nameWithOwner}: ${e.message.slice(0, 120)}`);
     }
+    if (bulk) bulkSkipped.push(`${repo.nameWithOwner} (${bulk})`);
     if (commits) stats.set(repo.nameWithOwner, { commits, additions, deletions });
   });
 
@@ -148,6 +163,7 @@ async function fetchData() {
   if (noContents.length) console.warn(`::warning::The token can see but not read the commits of ${noContents.length} repos ` +
     `(${noContents.join(", ")}). Use a classic token with the \`repo\` scope (fine-grained tokens need Contents: Read, ` +
     "and can't reach repos owned by other users at all).");
+  if (bulkSkipped.length) console.log(`left out of line counts as bulk imports (>${CONFIG.bulkCommitLines} lines in one commit): ${bulkSkipped.join(", ")}`);
   if (failed.length) console.warn(`::warning::Could not read commit history for ${failed.length} repos: ${failed.join("; ")}`);
 
   return {
