@@ -48,7 +48,7 @@ async function pool(items, n, fn) {
   }));
 }
 
-const REPO_FIELDS = `nameWithOwner name isPrivate isFork pushedAt
+const REPO_FIELDS = `nameWithOwner name isPrivate isFork pushedAt owner { login __typename }
   primaryLanguage { name color }
   languages(first: 10, orderBy: {field: SIZE, direction: DESC}) { edges { size node { name color } } }`;
 
@@ -157,6 +157,7 @@ async function fetchData() {
   const restricted = v.contributionsCollection.restrictedContributionsCount;
   console.log(`token sees ${repos.size} repos (${[...repos.values()].filter((r) => r.isPrivate).length} private); ` +
     `inspected ${candidates.length}, found your commits in ${worked.length}`);
+  console.log(`counted: ${[...worked].sort((a, b) => b.commits - a.commits).map((r) => `${r.nameWithOwner} (${r.commits})`).join(", ")}`);
   console.log(`commits this year by repo: ${yearly.map((c) => `${c.repository.nameWithOwner} (${c.contributions.totalCount})`).join(", ") || "none"}`);
   if (restricted) console.warn(`::warning::${restricted} contributions this year are in repos this token cannot read. ` +
     "Give the token the `repo` scope and authorize it for your organisation's SSO (Settings > Developer settings > Tokens > Configure SSO).");
@@ -188,6 +189,7 @@ function mockData() {
   const L = { "C++": "#f34b7d", C: "#555555", Lua: "#000080", Python: "#3572A5", Rust: "#dea584", TypeScript: "#3178c6", "C#": "#178600" };
   const repo = (nameWithOwner, isPrivate, langs, commits, additions, prs, daysAgo) => ({
     nameWithOwner, name: nameWithOwner.split("/")[1], isPrivate, isFork: false,
+    owner: { login: nameWithOwner.split("/")[0], __typename: nameWithOwner.startsWith("SgtDevRupesh/") ? "User" : "Organization" },
     pushedAt: new Date(Date.now() - daysAgo * 864e5).toISOString(),
     primaryLanguage: { name: langs[0], color: L[langs[0]] },
     languages: { edges: langs.map((l, i) => ({ size: 1e6 / (i + 1), node: { name: l, color: L[l] } })) },
@@ -201,13 +203,26 @@ function mockData() {
       repo("acme/mission-server", true, ["C#", "Python"], 862, 198_402, 97, 1),
       repo("acme/avionics-mfd", true, ["C++", "Lua"], 641, 154_210, 61, 2),
       repo("SgtDevRupesh/F16-Flight-Control-Law", false, ["C++"], 412, 88_120, 22, 4),
-      repo("acme/sensor-sim", true, ["C++", "Python"], 388, 61_903, 34, 6),
+      repo("SFL-Devs/sensor-sim", true, ["C++", "Python"], 388, 61_903, 34, 6),
       repo("SgtDevRupesh/dcs-hud-overlay", false, ["Lua"], 233, 21_448, 9, 9),
-      repo("acme/ops-dashboard", true, ["TypeScript"], 197, 44_017, 28, 12),
+      repo("Airplane-Team/dcs-bridge", true, ["TypeScript"], 197, 44_017, 28, 12),
       repo("SgtDevRupesh/trim-solver", false, ["Python", "Rust"], 96, 8_812, 4, 30),
       repo("SgtDevRupesh/dotfiles", false, ["Lua"], 41, 1_210, 0, 50),
     ],
   };
+}
+
+// Work grouped by the organisations (or other people's accounts) that own the repos.
+function teams(repos, login) {
+  const by = new Map();
+  for (const r of repos) {
+    const owner = r.owner?.login ?? r.nameWithOwner.split("/")[0];
+    if (owner.toLowerCase() === login.toLowerCase()) continue;
+    const g = by.get(owner) ?? { owner, isOrg: r.owner?.__typename !== "User", repos: 0, commits: 0, additions: 0 };
+    g.repos++; g.commits += r.commits; g.additions += r.additions;
+    by.set(owner, g);
+  }
+  return [...by.values()].sort((a, b) => b.commits - a.commits);
 }
 
 function digest(raw) {
@@ -251,6 +266,7 @@ function digest(raw) {
     repoCount: repos.length,
     privateCount: repos.filter((r) => r.isPrivate).length,
     top: [...repos].sort((a, b) => b.commits - a.commits).slice(0, CONFIG.listRepos),
+    teams: teams(repos, raw.login),
     languages, days, streak, best, busiest,
     yearTotal: raw.calendar.totalContributions,
   };
@@ -459,6 +475,22 @@ function reposCard(d, t) {
   return svg(h + GAP, t, "Repositories I work on", b);
 }
 
+function teamsCard(d, t) {
+  const shown = d.teams.slice(0, 3);
+  if (!shown.length) return svg(1, t, "Teams", "");
+  const h = 176, w = (W - GAP * (shown.length - 1)) / shown.length;
+  let b = "";
+  shown.forEach((g, i) => {
+    const more = i === shown.length - 1 && d.teams.length > 3 ? ` · +${d.teams.length - 3} more teams` : "";
+    b += tile(`team${i}`, i * (w + GAP), 0, w, h, t,
+      eyebrow(PAD, 52, g.isOrg ? "Organisation" : "Collaboration", t) +
+      text(PAD - 1, 92, clip(g.owner, Math.floor((w - PAD * 2) / 15)), { size: 28, weight: 600, fill: t.fg, track: -0.7 }) +
+      text(PAD, 124, `${plural(g.commits, "commit")} · ${compact(g.additions)} lines`, { size: 15, fill: t.fg2 }) +
+      text(PAD, 146, `${num(g.repos)} ${g.repos === 1 ? "repository" : "repositories"}${more}`, { size: 15, fill: t.fg2 }));
+  });
+  return svg(h + GAP, t, "Teams I contribute to", b);
+}
+
 // ---------- main ----------
 
 const mock = process.argv.includes("--mock");
@@ -482,7 +514,7 @@ if (!mock) {
 await loadAssets();
 const d = digest(mock ? mockData() : await fetchData());
 await mkdir(new URL("metrics/", ROOT), { recursive: true });
-const cards = { hero: heroCard, stats: statsCard, craft: craftCard, repos: reposCard };
+const cards = { hero: heroCard, stats: statsCard, craft: craftCard, repos: reposCard, teams: teamsCard };
 for (const [name, render] of Object.entries(cards))
   for (const [theme, t] of Object.entries(THEMES))
     await writeFile(new URL(`metrics/${name}-${theme}.svg`, ROOT), render(d, t));

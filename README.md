@@ -14,3 +14,7 @@
   <source media="(prefers-color-scheme: dark)" srcset="metrics/repos-dark.svg">
   <img src="metrics/repos-light.svg" alt="Repositories I work on" width="100%">
 </picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="metrics/teams-dark.svg">
+  <img src="metrics/teams-light.svg" alt="Organisations and teams I contribute to" width="100%">
+</picture>
