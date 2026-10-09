@@ -103,7 +103,7 @@ async function fetchData() {
     const d = await gql(`query($q: String!, $cursor: String) {
       search(type: ISSUE, query: $q, first: 100, after: $cursor) {
         issueCount pageInfo { hasNextPage endCursor }
-        nodes { ... on PullRequest { merged additions deletions repository { nameWithOwner }
+        nodes { ... on PullRequest { merged mergedAt additions deletions repository { nameWithOwner }
           mergeCommit { oid } commits { totalCount } } }
       } }`, { q: `is:pr author:${v.login}`, cursor });
     prTotal = d.search.issueCount;
@@ -130,6 +130,8 @@ async function fetchData() {
     const [owner, name] = repo.nameWithOwner.split("/");
     const team = owner.toLowerCase() !== me;
     let commits = 0, coAuthored = 0, viaPrs = 0, additions = 0, deletions = 0, bulk = 0, after = null;
+    let lastActive = null; // your own latest commit or merged PR here, not just anyone's push
+    const seen = (iso) => { if (iso && (!lastActive || iso > lastActive)) lastActive = iso; };
     const mine = new Set();
     const add = (a, dl) => {
       if (a > CONFIG.bulkCommitLines) bulk++;
@@ -141,7 +143,7 @@ async function fetchData() {
           repository(owner: $owner, name: $name) { isEmpty defaultBranchRef { target { ... on Commit {
             history(first: 40, after: $after, author: $author) {
               totalCount pageInfo { hasNextPage endCursor }
-              nodes { oid additions deletions author { user { login } } authors(first: 8) { nodes { user { login } } } }
+              nodes { oid committedDate additions deletions author { user { login } } authors(first: 8) { nodes { user { login } } } }
             } } } } } }`, { owner, name, author: team ? null : { id: v.id }, after });
         const h = d.repository?.defaultBranchRef?.target?.history;
         if (!h) {
@@ -156,6 +158,7 @@ async function fetchData() {
           commits++;
           if (isCo) coAuthored++;
           mine.add(n.oid);
+          seen(n.committedDate);
           add(n.additions, n.deletions);
         }
         if (!h.pageInfo.hasNextPage) break;
@@ -167,12 +170,13 @@ async function fetchData() {
     for (const pr of mergedPrs.get(repo.nameWithOwner) ?? []) {
       if (pr.mergeCommit && mine.has(pr.mergeCommit.oid)) continue; // already credited above
       viaPrs += pr.commits.totalCount;
+      seen(pr.mergedAt);
       add(pr.additions, pr.deletions);
     }
     commits += viaPrs;
     if (team && (coAuthored || viaPrs)) teamCredit.push(`${repo.nameWithOwner}: ${commits - coAuthored - viaPrs} authored, ${coAuthored} co-authored, ${viaPrs} via merged PRs`);
     if (bulk) bulkSkipped.push(`${repo.nameWithOwner} (${bulk})`);
-    if (commits) stats.set(repo.nameWithOwner, { commits, additions, deletions });
+    if (commits) stats.set(repo.nameWithOwner, { commits, additions, deletions, lastActive });
   });
 
   const worked = candidates
@@ -221,6 +225,7 @@ function mockData() {
     primaryLanguage: { name: langs[0], color: L[langs[0]] },
     languages: { edges: langs.map((l, i) => ({ size: 1e6 / (i + 1), node: { name: l, color: L[l] } })) },
     commits, additions, deletions: Math.round(additions * 0.38), prs,
+    lastActive: new Date(Date.now() - daysAgo * 864e5).toISOString(),
   });
   return {
     login: "SgtDevRupesh", name: "Rupesh Prasad", prTotal: 412,
@@ -293,6 +298,7 @@ function digest(raw) {
     repoCount: repos.length,
     privateCount: repos.filter((r) => r.isPrivate).length,
     top: [...repos].sort((a, b) => b.commits - a.commits).slice(0, CONFIG.listRepos),
+    recent: [...repos].sort((a, b) => (b.lastActive ?? b.pushedAt).localeCompare(a.lastActive ?? a.pushedAt)).slice(0, CONFIG.listRepos),
     teams: teams(repos, raw.login),
     languages, days, streak, best, busiest,
     yearTotal: raw.calendar.totalContributions,
@@ -461,9 +467,9 @@ function craftCard(d, t) {
 }
 
 function reposCard(d, t) {
-  const rows = d.top.slice(0, 6), rowH = 58, lw = 620, h = 140 + rows.length * rowH + 16;
+  const rows = d.recent.slice(0, 6), rowH = 58, lw = 620, h = 140 + rows.length * rowH + 16;
   const colC = 468, colL = lw - PAD;
-  let a = eyebrow(PAD, 54, "Repositories", t) + headline(PAD, 94, "Where the work happens.", t);
+  let a = eyebrow(PAD, 54, "Recent work", t) + headline(PAD, 94, "Where the work happens.", t);
   a += text(colC, 130, "Commits", { size: 13, weight: 600, fill: t.fg2, anchor: "end" }) +
     text(colL, 130, "Lines", { size: 13, weight: 600, fill: t.fg2, anchor: "end" });
   rows.forEach((r, i) => {
@@ -475,14 +481,14 @@ function reposCard(d, t) {
       a += `<rect x="${px.toFixed(0)}" y="${y + 12}" width="52" height="19" rx="9.5" fill="${t.pill}"/>` +
         text(px + 26, y + 25.5, "Private", { size: 11, weight: 600, fill: t.fg2, anchor: "middle" });
     }
-    a += text(PAD, y + 46, [r.primaryLanguage?.name, ago(r.pushedAt)].filter(Boolean).join(" · "), { size: 13, fill: t.fg2 });
+    a += text(PAD, y + 46, [r.primaryLanguage?.name, ago(r.lastActive ?? r.pushedAt)].filter(Boolean).join(" · "), { size: 13, fill: t.fg2 });
     a += text(colC, y + 36, num(r.commits), { size: 17, weight: 600, fill: t.fg, anchor: "end" }) +
       text(colL, y + 36, compact(r.additions), { size: 17, fill: t.fg2, anchor: "end" });
   });
   let b = tile("repos", 0, 0, lw, h, t, a);
 
   // The most active project gets the product shot.
-  const star = rows.find((r) => !r.hidden) ?? rows[0];
+  const star = d.top.find((r) => !r.hidden) ?? d.top[0];
   const pw = W - lw - GAP;
   let p = eyebrow(PAD, 54, "Most active", t);
   if (star) {
