@@ -259,15 +259,17 @@ function digest(raw) {
 // ---------- rendering ----------
 
 // Apple Store look: soft rounded tiles, two-tone headlines, one warm accent for eyebrows,
-// product photos graded alike and dropped onto the tile with a studio shadow.
+// and gradient colour used sparingly for the numbers that matter.
 const THEMES = {
   light: {
     fg: "#1d1d1f", fg2: "#6e6e73", tile: "#f5f5f7", line: "rgba(0,0,0,.08)", eyebrow: "#bf4800",
-    rings: ["#ff2d55", "#34c759", "#007aff"], spark: "#0071e3", pill: "rgba(0,0,0,.06)", shadow: 0.22,
+    rings: ["#ff2d55", "#34c759", "#007aff"], spark: "#0071e3", pill: "rgba(0,0,0,.06)",
+    grad: ["#0066cc", "#8a3ffc"], aurora: [["#5ac8fa", 0.55], ["#af52de", 0.4], ["#ff9f0a", 0.3]],
   },
   dark: {
     fg: "#f5f5f7", fg2: "#86868b", tile: "#1d1d1f", line: "rgba(255,255,255,.1)", eyebrow: "#f56300",
-    rings: ["#ff375f", "#30d158", "#0a84ff"], spark: "#2997ff", pill: "rgba(255,255,255,.12)", shadow: 0.6,
+    rings: ["#ff375f", "#30d158", "#0a84ff"], spark: "#2997ff", pill: "rgba(255,255,255,.12)",
+    grad: ["#2997ff", "#bf5af2"], aurora: [["#0a84ff", 0.5], ["#bf5af2", 0.42], ["#ff9f0a", 0.22]],
   },
 };
 const W = 1000, GAP = 20, RADIUS = 28, PAD = 36;
@@ -291,37 +293,9 @@ function text(x, y, s, { size = 14, fill, weight = 400, anchor = "start", track 
 const eyebrow = (x, y, s, t) => text(x, y, s, { size: 15, weight: 600, fill: t.eyebrow });
 const headline = (x, y, s, t) => text(x - 1, y, s, { size: 32, weight: 600, fill: t.fg, track: -0.8 });
 
-function jpegSize(buf) {
-  for (let i = 2; i < buf.length; ) {
-    const marker = buf[i + 1];
-    if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker))
-      return { h: buf.readUInt16BE(i + 5), w: buf.readUInt16BE(i + 7) };
-    i += 2 + buf.readUInt16BE(i + 2);
-  }
-  throw new Error("not a jpeg");
-}
-
 const assets = {};
 async function loadAssets() {
   assets.font = (await readFile(new URL("assets/inter-var.woff2", ROOT))).toString("base64");
-  for (const name of ["f16", "patriot", "harm"]) {
-    const rgb = await readFile(new URL(`assets/${name}_rgb.jpg`, ROOT));
-    const mask = await readFile(new URL(`assets/${name}_mask.jpg`, ROOT));
-    assets[name] = { ...jpegSize(rgb), rgb: rgb.toString("base64"), mask: mask.toString("base64") };
-  }
-}
-
-const photoHeight = (name, w) => Math.round((assets[name].h / assets[name].w) * w);
-
-/** A cut-out photo (JPEG colour + JPEG luminance mask), graded and shadowed like the others. */
-function photo(name, x, y, w, { erode = 1, cls = "" } = {}) {
-  const a = assets[name], h = photoHeight(name, w);
-  // Erode + feather trims the 1-2px fringe of original background that cut-outs leave behind.
-  return `<filter id="e-${name}"><feMorphology operator="erode" radius="${erode}"/><feGaussianBlur stdDeviation=".7"/></filter>` +
-    `<mask id="m-${name}" maskUnits="userSpaceOnUse" x="${x}" y="${y}" width="${w}" height="${h}">` +
-    `<image href="data:image/jpeg;base64,${a.mask}" x="${x}" y="${y}" width="${w}" height="${h}" filter="url(#e-${name})"/></mask>` +
-    `<g class="${cls}"><g filter="url(#shadow)"><g mask="url(#m-${name})">` +
-    `<image href="data:image/jpeg;base64,${a.rgb}" x="${x}" y="${y}" width="${w}" height="${h}" filter="url(#grade)"/></g></g></g>`;
 }
 
 /** A rounded tile at (x, y); `body` uses tile-local coordinates and is clipped to the tile. */
@@ -334,23 +308,28 @@ function tile(id, x, y, w, h, t, body) {
 function svg(h, t, label, body) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${h}" viewBox="0 0 ${W} ${h}" role="img" aria-label="${esc(label)}">
 <defs>
-<filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#000" flood-opacity="${t.shadow}"/></filter>
-<filter id="grade"><feColorMatrix type="saturate" values=".8"/></filter>
+<linearGradient id="num" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.grad[0]}"/><stop offset="1" stop-color="${t.grad[1]}"/></linearGradient>
+<filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="58"/></filter>
 </defs>
 <style>
 @font-face{font-family:"Inter Embedded";src:url(data:font/woff2;base64,${assets.font}) format("woff2");font-weight:100 900;font-display:swap}
 text{font-family:"Inter Embedded",-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Helvetica,Arial,sans-serif;font-feature-settings:"tnum" 1}
-.float{animation:float 8s ease-in-out infinite alternate}
-@keyframes float{from{transform:translateY(0)}to{transform:translateY(-7px)}}
-@media (prefers-reduced-motion:reduce){.float{animation:none}}
+.drift{animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(-24px,14px)}}
+@media (prefers-reduced-motion:reduce){.drift{animation:none}}
 </style>
 ${body}
 </svg>`;
 }
 
 function heroCard(d, t) {
-  const h = 460;
-  let b = photo("f16", 500, 64, 600, { cls: "float" });
+  const h = 360;
+  // A soft aurora of colour on the right, the way Apple's product pages glow.
+  const [c1, c2, c3] = t.aurora;
+  let b = `<g filter="url(#soft)"><g class="drift">` +
+    `<circle cx="790" cy="110" r="170" fill="${c1[0]}" fill-opacity="${c1[1]}"/>` +
+    `<circle cx="900" cy="280" r="160" fill="${c2[0]}" fill-opacity="${c2[1]}"/>` +
+    `<circle cx="670" cy="300" r="120" fill="${c3[0]}" fill-opacity="${c3[1]}"/></g></g>`;
   b += eyebrow(PAD + 8, 78, CONFIG.role, t);
   b += text(PAD + 5, 150, `${d.name}.`, { size: 64, weight: 600, fill: t.fg, track: -1.9 });
   CONFIG.tagline.forEach((line, i) => (b += text(PAD + 8, 200 + i * 32, line, { size: 24, weight: 600, fill: t.fg2, track: -0.5 })));
@@ -360,11 +339,11 @@ function heroCard(d, t) {
 }
 
 function statsCard(d, t) {
-  const h = 340, big = 580;
+  const h = 300, big = 580;
   let a = text(PAD, 58, "Lines of code written", { size: 17, weight: 600, fill: t.fg2 });
-  a += text(PAD - 4, 142, compact(d.additions), { size: 88, weight: 600, fill: t.fg, track: -3 });
-  a += text(PAD, 174, `Across ${num(d.repoCount)} ${d.repoCount === 1 ? "repository" : "repositories"}. Bulk imports not counted.`, { size: 15, fill: t.fg2 });
-  a += photo("harm", 170, 176, 400);
+  a += text(PAD - 6, 190, compact(d.additions), { size: 128, weight: 600, fill: "url(#num)", track: -5 });
+  a += text(PAD, 232, `Across ${num(d.repoCount)} ${d.repoCount === 1 ? "repository" : "repositories"}, public and private.`, { size: 17, fill: t.fg2 });
+  a += text(PAD, 256, "Bulk imports and generated files not counted.", { size: 15, fill: t.fg2 });
   let b = tile("lines", 0, 0, big, h, t, a);
 
   const small = [["Commits", d.commits], ["Pull requests", d.prTotal], ["Repositories", d.repoCount], ["Private", d.privateCount]];
@@ -372,7 +351,7 @@ function statsCard(d, t) {
   small.forEach(([label, v], i) => {
     const x = big + GAP + (i % 2) * (sw + GAP), y = Math.floor(i / 2) * (sh + GAP);
     b += tile(`s${i}`, x, y, sw, sh, t,
-      text(24, 44, label, { size: 15, weight: 600, fill: t.fg2 }) + text(22, 120, num(v), { size: 52, weight: 600, fill: t.fg, track: -1.6 }));
+      text(24, 42, label, { size: 15, weight: 600, fill: t.fg2 }) + text(22, 108, num(v), { size: 48, weight: 600, fill: t.fg, track: -1.6 }));
   });
   return svg(h + GAP, t, "Engineering totals", b);
 }
@@ -467,7 +446,15 @@ function reposCard(d, t) {
     p += text(PAD - 1, 92, clip(star.name, 19), { size: 28, weight: 600, fill: t.fg, track: -0.7 }) +
       text(PAD, 120, [plural(star.commits, "commit"), star.primaryLanguage?.name, star.isPrivate ? "Private" : null].filter(Boolean).join(" · "), { size: 15, fill: t.fg2 });
   }
-  p += photo("patriot", 6, h - 300, 400, { erode: 1.4 });
+  if (star) {
+    // Ring: this repo's share of all your commits.
+    const share = star.commits / Math.max(1, d.commits), cx = pw / 2, cy = h - 168, r = 96;
+    p += `<linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.grad[0]}"/><stop offset="1" stop-color="${t.grad[1]}"/></linearGradient>` +
+      `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${t.pill}" stroke-width="22"/>` +
+      `<path d="${ringArc(cx, cy, r, share)}" fill="none" stroke="url(#ring)" stroke-width="22" stroke-linecap="round"/>` +
+      text(cx, cy + 8, `${Math.round(share * 100)}%`, { size: 40, weight: 600, fill: t.fg, anchor: "middle", track: -1 }) +
+      text(cx, cy + 32, "of all my commits", { size: 13, fill: t.fg2, anchor: "middle" });
+  }
   b += tile("star", lw + GAP, 0, pw, h, t, p);
   return svg(h + GAP, t, "Repositories I work on", b);
 }
