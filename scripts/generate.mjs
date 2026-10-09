@@ -258,10 +258,19 @@ function digest(raw) {
 
 // ---------- rendering ----------
 
+// Apple Store look: soft rounded tiles, two-tone headlines, one warm accent for eyebrows,
+// product photos graded alike and dropped onto the tile with a studio shadow.
 const THEMES = {
-  light: { fg: "#1d1d1f", fg2: "#6e6e73", fg3: "#86868b", line: "rgba(0,0,0,.1)", accent: "#0071e3", well: "rgba(0,0,0,.06)", grad: ["#1d1d1f", "#48484a"] },
-  dark: { dark: true, fg: "#f5f5f7", fg2: "#a1a1a6", fg3: "#6e6e73", line: "rgba(255,255,255,.14)", accent: "#2997ff", well: "rgba(255,255,255,.08)", grad: ["#ffffff", "#98989d"] },
+  light: {
+    fg: "#1d1d1f", fg2: "#6e6e73", tile: "#f5f5f7", line: "rgba(0,0,0,.08)", eyebrow: "#bf4800",
+    rings: ["#ff2d55", "#34c759", "#007aff"], spark: "#0071e3", pill: "rgba(0,0,0,.06)", shadow: 0.22,
+  },
+  dark: {
+    fg: "#f5f5f7", fg2: "#86868b", tile: "#1d1d1f", line: "rgba(255,255,255,.1)", eyebrow: "#f56300",
+    rings: ["#ff375f", "#30d158", "#0a84ff"], spark: "#2997ff", pill: "rgba(255,255,255,.12)", shadow: 0.6,
+  },
 };
+const W = 1000, GAP = 20, RADIUS = 28, PAD = 36;
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const num = (n) => Math.round(n).toLocaleString("en-US");
@@ -271,20 +280,16 @@ const ago = (iso) => {
   const d = Math.floor((Date.now() - new Date(iso)) / 864e5);
   return d < 1 ? "today" : d === 1 ? "yesterday" : d < 30 ? `${d} days ago` : d < 365 ? `${Math.floor(d / 30)} mo ago` : `${Math.floor(d / 365)} yr ago`;
 };
-// Language colours like Lua's navy disappear on a dark page; lift them toward white until readable.
-function legible(hex, t) {
-  if (!t.dark || !/^#[0-9a-f]{6}$/i.test(hex ?? "")) return hex ?? t.fg3;
-  let [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-  const lum = () => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-  while (lum() < 0.35) [r, g, b] = [r, g, b].map((c) => Math.round(c + (255 - c) * 0.15));
-  return "#" + [r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("");
-}
 const clip = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
+const plural = (n, word) => `${num(n)} ${word}${n === 1 ? "" : "s"}`;
+const textWidth = (s, size, weight = 400) => s.length * size * (weight >= 600 ? 0.5 : 0.48); // Inter, roughly
 
 function text(x, y, s, { size = 14, fill, weight = 400, anchor = "start", track = 0 } = {}) {
   return `<text x="${x}" y="${y}" font-size="${size}" font-weight="${weight}" fill="${fill}" text-anchor="${anchor}"` +
     (track ? ` letter-spacing="${track}"` : "") + `>${esc(s)}</text>`;
 }
+const eyebrow = (x, y, s, t) => text(x, y, s, { size: 15, weight: 600, fill: t.eyebrow });
+const headline = (x, y, s, t) => text(x - 1, y, s, { size: 32, weight: 600, fill: t.fg, track: -0.8 });
 
 function jpegSize(buf) {
   for (let i = 2; i < buf.length; ) {
@@ -308,131 +313,163 @@ async function loadAssets() {
 
 const photoHeight = (name, w) => Math.round((assets[name].h / assets[name].w) * w);
 
-/** A cut-out photo: JPEG colour masked by a JPEG luminance mask (far smaller than an RGBA PNG). */
-function photo(name, x, y, w, cls, erode = 1) {
+/** A cut-out photo (JPEG colour + JPEG luminance mask), graded and shadowed like the others. */
+function photo(name, x, y, w, { erode = 1, cls = "" } = {}) {
   const a = assets[name], h = photoHeight(name, w);
   // Erode + feather trims the 1-2px fringe of original background that cut-outs leave behind.
   return `<filter id="e-${name}"><feMorphology operator="erode" radius="${erode}"/><feGaussianBlur stdDeviation=".7"/></filter>` +
     `<mask id="m-${name}" maskUnits="userSpaceOnUse" x="${x}" y="${y}" width="${w}" height="${h}">` +
     `<image href="data:image/jpeg;base64,${a.mask}" x="${x}" y="${y}" width="${w}" height="${h}" filter="url(#e-${name})"/></mask>` +
-    `<g class="${cls}"><image href="data:image/jpeg;base64,${a.rgb}" x="${x}" y="${y}" width="${w}" height="${h}" mask="url(#m-${name})"/></g>`;
+    `<g class="${cls}"><g filter="url(#shadow)"><g mask="url(#m-${name})">` +
+    `<image href="data:image/jpeg;base64,${a.rgb}" x="${x}" y="${y}" width="${w}" height="${h}" filter="url(#grade)"/></g></g></g>`;
 }
 
-function svg(w, h, t, label, body) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}">
-<defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.grad[0]}"/><stop offset="1" stop-color="${t.grad[1]}"/></linearGradient></defs>
+/** A rounded tile at (x, y); `body` uses tile-local coordinates and is clipped to the tile. */
+function tile(id, x, y, w, h, t, body) {
+  return `<clipPath id="c-${id}"><rect width="${w}" height="${h}" rx="${RADIUS}"/></clipPath>` +
+    `<g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="${RADIUS}" fill="${t.tile}"/>` +
+    `<g clip-path="url(#c-${id})">${body}</g></g>`;
+}
+
+function svg(h, t, label, body) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${h}" viewBox="0 0 ${W} ${h}" role="img" aria-label="${esc(label)}">
+<defs>
+<filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#000" flood-opacity="${t.shadow}"/></filter>
+<filter id="grade"><feColorMatrix type="saturate" values=".8"/></filter>
+</defs>
 <style>
 @font-face{font-family:"Inter Embedded";src:url(data:font/woff2;base64,${assets.font}) format("woff2");font-weight:100 900;font-display:swap}
-text{font-family:"Inter Embedded",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-feature-settings:"tnum" 1}
-.float{animation:float 7s ease-in-out infinite alternate}
-.float-slow{animation:float 9s ease-in-out infinite alternate}
-@keyframes float{from{transform:translateY(0)}to{transform:translateY(-8px)}}
-@media (prefers-reduced-motion:reduce){.float,.float-slow{animation:none}}
+text{font-family:"Inter Embedded",-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Helvetica,Arial,sans-serif;font-feature-settings:"tnum" 1}
+.float{animation:float 8s ease-in-out infinite alternate}
+@keyframes float{from{transform:translateY(0)}to{transform:translateY(-7px)}}
+@media (prefers-reduced-motion:reduce){.float{animation:none}}
 </style>
 ${body}
 </svg>`;
 }
 
-function eyebrow(x, y, s, t) {
-  return text(x, y, s.toUpperCase(), { size: 13, weight: 600, fill: t.accent, track: 1.6 });
-}
-
 function heroCard(d, t) {
-  const W = 1000, jetW = 600, jetH = photoHeight("f16", jetW);
-  let b = photo("f16", W - jetW, 20, jetW, "float");
-  b += eyebrow(0, 60, CONFIG.role, t);
-  const [first, ...rest] = d.name.split(" ");
-  b += text(-3, 132, first, { size: 72, weight: 700, fill: "url(#hg)", track: -2.2 });
-  if (rest.length) b += text(-3, 206, rest.join(" ") + ".", { size: 72, weight: 700, fill: "url(#hg)", track: -2.2 });
-  CONFIG.tagline.forEach((line, i) => (b += text(0, 256 + i * 28, line, { size: 20, fill: t.fg2, track: -0.2 })));
-
-  const y = Math.max(360, 20 + jetH - 30);
-  b += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="${t.line}"/>`;
-  const stats = [
-    [compact(d.additions), "lines of code written"],
-    [num(d.commits), "commits"],
-    [num(d.prTotal), d.prTotal === 1 ? "pull request" : "pull requests"],
-    [num(d.repoCount), `repositories · ${d.privateCount} private`],
-  ];
-  stats.forEach(([v, label], i) => {
-    b += text(i * 250, y + 72, v, { size: 46, weight: 700, fill: t.fg, track: -1.4 }) +
-      text(i * 250, y + 100, label, { size: 15, fill: t.fg2 });
-  });
+  const h = 460;
+  let b = photo("f16", 500, 64, 600, { cls: "float" });
+  b += eyebrow(PAD + 8, 78, CONFIG.role, t);
+  b += text(PAD + 5, 150, `${d.name}.`, { size: 64, weight: 600, fill: t.fg, track: -1.9 });
+  CONFIG.tagline.forEach((line, i) => (b += text(PAD + 8, 200 + i * 32, line, { size: 24, weight: 600, fill: t.fg2, track: -0.5 })));
   const updated = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-  b += text(0, y + 140, `All-time totals across public and private repositories · Updated ${updated}`, { size: 12, fill: t.fg3 });
-  return svg(W, y + 150, t, `${d.name}: engineering summary`, b);
+  b += text(PAD + 8, h - PAD - 4, `Updated ${updated}`, { size: 14, fill: t.fg2 });
+  return svg(h + GAP, t, `${d.name}: ${CONFIG.role}`, tile("hero", 0, 0, W, h, t, b));
 }
 
-function reposCard(d, t) {
-  const W = 1000, x0 = 430, rowH = 54, headY = 150;
-  const H = Math.max(headY + 30 + d.top.length * rowH + 10, 480);
-  const samW = 420, samH = photoHeight("patriot", samW);
-  let b = photo("patriot", -20, Math.max(10, H - samH - 10), samW, "float-slow", 1.4);
-  b += eyebrow(x0, 40, "Repositories", t);
-  b += text(x0 - 2, 88, "Where the work happens.", { size: 38, weight: 700, fill: t.fg, track: -1.1 });
-  b += text(x0, 120, `${d.repoCount} repositories with my commits, ${d.privateCount} of them private.`, { size: 16, fill: t.fg2 });
+function statsCard(d, t) {
+  const h = 340, big = 580;
+  let a = text(PAD, 58, "Lines of code written", { size: 17, weight: 600, fill: t.fg2 });
+  a += text(PAD - 4, 142, compact(d.additions), { size: 88, weight: 600, fill: t.fg, track: -3 });
+  a += text(PAD, 174, `Across ${num(d.repoCount)} ${d.repoCount === 1 ? "repository" : "repositories"}. Bulk imports not counted.`, { size: 15, fill: t.fg2 });
+  a += photo("harm", 170, 176, 400);
+  let b = tile("lines", 0, 0, big, h, t, a);
 
-  const cols = [[780, "Commits"], [890, "Lines +"], [W, "PRs"]];
-  b += text(x0, headY + 16, "PROJECT", { size: 11, weight: 600, fill: t.fg3, track: 1 });
-  for (const [x, label] of cols) b += text(x, headY + 16, label.toUpperCase(), { size: 11, weight: 600, fill: t.fg3, track: 1, anchor: "end" });
-  d.top.forEach((r, i) => {
-    const y = headY + 30 + i * rowH;
-    b += `<line x1="${x0}" y1="${y}" x2="${W}" y2="${y}" stroke="${t.line}"/>`;
-    const meta = [r.primaryLanguage?.name, r.isPrivate ? "Private" : null, ago(r.pushedAt)].filter(Boolean).join("  ·  ");
-    b += text(x0, y + 24, clip(r.hidden ? "Private project" : r.name, 30), { size: 17, weight: 600, fill: t.fg, track: -0.2 });
-    if (r.primaryLanguage) b += `<circle cx="${x0 + 4}" cy="${y + 40.5}" r="4" fill="${legible(r.primaryLanguage.color, t)}"/>`;
-    b += text(x0 + (r.primaryLanguage ? 14 : 0), y + 45, meta, { size: 13, fill: t.fg2 });
-    b += text(780, y + 33, num(r.commits), { size: 17, weight: 600, fill: t.fg, anchor: "end" });
-    b += text(890, y + 33, compact(r.additions), { size: 17, weight: 500, fill: t.fg2, anchor: "end" });
-    b += text(W, y + 33, num(r.prs), { size: 17, weight: 500, fill: t.fg2, anchor: "end" });
+  const small = [["Commits", d.commits], ["Pull requests", d.prTotal], ["Repositories", d.repoCount], ["Private", d.privateCount]];
+  const sw = (W - big - 2 * GAP) / 2, sh = (h - GAP) / 2;
+  small.forEach(([label, v], i) => {
+    const x = big + GAP + (i % 2) * (sw + GAP), y = Math.floor(i / 2) * (sh + GAP);
+    b += tile(`s${i}`, x, y, sw, sh, t,
+      text(24, 44, label, { size: 15, weight: 600, fill: t.fg2 }) + text(22, 120, num(v), { size: 52, weight: 600, fill: t.fg, track: -1.6 }));
   });
-  return svg(W, H, t, "Repositories I work on", b);
+  return svg(h + GAP, t, "Engineering totals", b);
+}
+
+function ringArc(cx, cy, r, frac) {
+  const f = Math.min(Math.max(frac, 0.02), 0.9999), a = f * 2 * Math.PI;
+  const x = (cx + r * Math.sin(a)).toFixed(2), y = (cy - r * Math.cos(a)).toFixed(2);
+  return `M${cx} ${cy - r}A${r} ${r} 0 ${f > 0.5 ? 1 : 0} 1 ${x} ${y}`;
+}
+
+/** Smooth line through points (Catmull-Rom converted to cubic Béziers). */
+function smooth(pts) {
+  let p = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [p0, p1, p2, p3] = [pts[i - 1] ?? pts[i], pts[i], pts[i + 1], pts[i + 2] ?? pts[i + 1]];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    p += `C${c1.map((v) => v.toFixed(1)).join(" ")} ${c2.map((v) => v.toFixed(1)).join(" ")} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return p;
 }
 
 function craftCard(d, t) {
-  const W = 1000, x0 = 520, barW = W - x0;
-  const harmW = 480, harmH = photoHeight("harm", harmW);
-  let b = photo("harm", -20, 30, harmW, "float");
-  b += eyebrow(x0, 40, "Languages", t);
-  b += text(x0 - 2, 88, "What I write in.", { size: 38, weight: 700, fill: t.fg, track: -1.1 });
-  b += text(x0, 120, "Weighted by the lines I added, in every repository.", { size: 16, fill: t.fg2 });
+  const h = 380, w = (W - GAP) / 2;
 
-  // Segmented bar, then a two-column legend.
-  let x = x0;
-  b += `<clipPath id="bar"><rect x="${x0}" y="150" width="${barW}" height="10" rx="5"/></clipPath><g clip-path="url(#bar)">`;
-  d.languages.forEach((l, i) => {
-    const w = Math.max(2, l.pct * barW - (i < d.languages.length - 1 ? 3 : 0));
-    b += `<rect x="${x.toFixed(1)}" y="150" width="${w.toFixed(1)}" height="10" fill="${legible(l.color, t)}"/>`;
-    x += l.pct * barW;
+  // Languages as activity rings: one ring per top language, filled to its share.
+  const named = d.languages.filter((l) => l.name !== "Other");
+  const top = named.slice(0, 3);
+  let a = eyebrow(PAD, 54, "Languages", t) + headline(PAD, 94, `Mostly ${top[0]?.name ?? "code"}.`, t);
+  const cx = 138, cy = 248, sw = 20;
+  top.forEach((l, i) => {
+    const r = 94 - i * (sw + 4), c = t.rings[i];
+    a += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c}" stroke-opacity=".16" stroke-width="${sw}"/>` +
+      `<path d="${ringArc(cx, cy, r, l.pct)}" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
   });
-  b += `</g>`;
-  d.languages.forEach((l, i) => {
-    const lx = x0 + (i % 2) * (barW / 2), ly = 196 + Math.floor(i / 2) * 34;
-    b += `<circle cx="${lx + 5}" cy="${ly - 5}" r="5" fill="${legible(l.color, t)}"/>` +
-      text(lx + 18, ly, l.name, { size: 15, weight: 500, fill: t.fg }) +
-      text(lx + barW / 2 - 24, ly, `${(l.pct * 100).toFixed(1)}%`, { size: 15, fill: t.fg2, anchor: "end" });
+  top.forEach((l, i) => {
+    const y = 182 + i * 50;
+    a += text(272, y, l.name, { size: 15, weight: 600, fill: t.fg2 }) +
+      text(271, y + 26, `${(l.pct * 100).toFixed(0)}%`, { size: 26, weight: 600, fill: t.rings[i], track: -0.5 });
   });
+  const rest = named.slice(3).map((l) => l.name);
+  if (rest.length) a += text(272, 182 + top.length * 50 + 4, clip(`Also ${rest.join(", ")}.`, 24), { size: 14, fill: t.fg2 });
+  let b = tile("langs", 0, 0, w, h, t, a);
 
-  // Last 12 months: headline numbers over a quiet dot calendar.
-  const y = Math.max(320, 30 + harmH + 10);
-  b += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="${t.line}"/>`;
-  b += eyebrow(0, y + 36, "Last 12 months", t);
+  // The year as a smooth weekly line, Health-app style.
+  const weeks = [];
+  for (let i = 0; i < d.days.length; i += 7) weeks.push(d.days.slice(i, i + 7).reduce((s, x) => s + x.contributionCount, 0));
+  const max = Math.max(...weeks, 1), x0 = PAD, x1 = w - PAD, y0 = 136, y1 = 280;
+  const pts = weeks.map((v, i) => [x0 + (i / (weeks.length - 1)) * (x1 - x0), y1 - (v / max) * (y1 - y0)]);
+  const line = smooth(pts);
+  let c = eyebrow(PAD, 54, "This year", t) + headline(PAD, 94, `${num(d.yearTotal)} contributions.`, t);
+  c += `<linearGradient id="spark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.spark}" stop-opacity=".28"/><stop offset="1" stop-color="${t.spark}" stop-opacity="0"/></linearGradient>` +
+    `<path d="${line}L${x1} ${y1}L${x0} ${y1}Z" fill="url(#spark)"/>` +
+    `<path d="${line}" fill="none" stroke="${t.spark}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>` +
+    `<line x1="${x0}" y1="${y1 + 0.5}" x2="${x1}" y2="${y1 + 0.5}" stroke="${t.line}"/>`;
   const busy = new Date(d.busiest.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
-  const stats = [[num(d.yearTotal), "contributions"], [`${d.streak}d`, "current streak"], [`${d.best}d`, "longest streak"], [String(d.busiest.contributionCount), `busiest day · ${busy}`]];
-  stats.forEach(([v, label], i) => {
-    b += text(i * 250, y + 86, v, { size: 36, weight: 700, fill: t.fg, track: -1 }) + text(i * 250, y + 110, label, { size: 14, fill: t.fg2 });
-  });
+  [[plural(d.streak, "day"), "Current streak"], [plural(d.best, "day"), "Longest streak"], [String(d.busiest.contributionCount), `Busiest day, ${busy}`]]
+    .forEach(([v, label], i) => {
+      const x = PAD + i * 140;
+      c += text(x, 322, v, { size: 20, weight: 600, fill: t.fg, track: -0.3 }) + text(x, 344, label, { size: 13, fill: t.fg2 });
+    });
+  b += tile("year", w + GAP, 0, w, h, t, c);
+  return svg(h + GAP, t, "Languages and activity", b);
+}
 
-  const top = y + 136, cell = W / 53, r = cell * 0.32;
-  const max = Math.max(...d.days.map((x) => x.contributionCount), 1);
-  d.days.forEach((day, i) => {
-    const k = i + d.days[0].weekday, cx = Math.floor(k / 7) * cell + cell / 2, cy = top + (k % 7) * cell + cell / 2;
-    if (cx > W) return;
-    const n = day.contributionCount;
-    b += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="${n ? t.accent : t.well}"` +
-      (n ? ` fill-opacity="${(0.25 + 0.75 * Math.sqrt(n / max)).toFixed(2)}"` : "") + "/>";
+function reposCard(d, t) {
+  const rows = d.top.slice(0, 6), rowH = 58, lw = 620, h = 140 + rows.length * rowH + 16;
+  const colC = 468, colL = lw - PAD;
+  let a = eyebrow(PAD, 54, "Repositories", t) + headline(PAD, 94, "Where the work happens.", t);
+  a += text(colC, 130, "Commits", { size: 13, weight: 600, fill: t.fg2, anchor: "end" }) +
+    text(colL, 130, "Lines", { size: 13, weight: 600, fill: t.fg2, anchor: "end" });
+  rows.forEach((r, i) => {
+    const y = 140 + i * rowH, name = clip(r.hidden ? "Private project" : r.name, 24);
+    a += `<line x1="${PAD}" y1="${y}" x2="${colL}" y2="${y}" stroke="${t.line}"/>`;
+    a += text(PAD, y + 26, name, { size: 17, weight: 600, fill: t.fg, track: -0.2 });
+    if (r.isPrivate) {
+      const px = PAD + textWidth(name, 17, 600) + 10;
+      a += `<rect x="${px.toFixed(0)}" y="${y + 12}" width="52" height="19" rx="9.5" fill="${t.pill}"/>` +
+        text(px + 26, y + 25.5, "Private", { size: 11, weight: 600, fill: t.fg2, anchor: "middle" });
+    }
+    a += text(PAD, y + 46, [r.primaryLanguage?.name, ago(r.pushedAt)].filter(Boolean).join(" · "), { size: 13, fill: t.fg2 });
+    a += text(colC, y + 36, num(r.commits), { size: 17, weight: 600, fill: t.fg, anchor: "end" }) +
+      text(colL, y + 36, compact(r.additions), { size: 17, fill: t.fg2, anchor: "end" });
   });
-  return svg(W, top + 7 * cell + 4, t, "Languages and activity", b);
+  let b = tile("repos", 0, 0, lw, h, t, a);
+
+  // The most active project gets the product shot.
+  const star = rows.find((r) => !r.hidden) ?? rows[0];
+  const pw = W - lw - GAP;
+  let p = eyebrow(PAD, 54, "Most active", t);
+  if (star) {
+    p += text(PAD - 1, 92, clip(star.name, 19), { size: 28, weight: 600, fill: t.fg, track: -0.7 }) +
+      text(PAD, 120, [plural(star.commits, "commit"), star.primaryLanguage?.name, star.isPrivate ? "Private" : null].filter(Boolean).join(" · "), { size: 15, fill: t.fg2 });
+  }
+  p += photo("patriot", 6, h - 300, 400, { erode: 1.4 });
+  b += tile("star", lw + GAP, 0, pw, h, t, p);
+  return svg(h + GAP, t, "Repositories I work on", b);
 }
 
 // ---------- main ----------
@@ -458,7 +495,7 @@ if (!mock) {
 await loadAssets();
 const d = digest(mock ? mockData() : await fetchData());
 await mkdir(new URL("metrics/", ROOT), { recursive: true });
-const cards = { hero: heroCard, repos: reposCard, craft: craftCard };
+const cards = { hero: heroCard, stats: statsCard, craft: craftCard, repos: reposCard };
 for (const [name, render] of Object.entries(cards))
   for (const [theme, t] of Object.entries(THEMES))
     await writeFile(new URL(`metrics/${name}-${theme}.svg`, ROOT), render(d, t));
