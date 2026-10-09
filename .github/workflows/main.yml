@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-    paths: ["scripts/**", ".github/workflows/main.yml"]
+    paths: ["scripts/**", "assets/**", ".github/workflows/main.yml"]
 jobs:
-  cockpit-metrics:
+  profile-metrics:
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -18,15 +18,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Render MFD cards
+      - name: Render profile cards
         run: node scripts/generate.mjs
         env:
-          # PAT with repo + read:user so private-repo languages/contributions are counted.
+          # Classic PAT with `repo` + `read:user` (+ `read:org`); authorize it for SSO orgs so work repos are visible.
           GITHUB_TOKEN: ${{ secrets.GHUB_TOKEN }}
       - name: Commit cards
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add metrics
-          git diff --cached --quiet || git commit -m "Update cockpit metrics - [Skip GitHub Action]"
+          git add -A metrics
+          git diff --cached --quiet || git commit -m "Update profile metrics - [Skip GitHub Action]"
           git push

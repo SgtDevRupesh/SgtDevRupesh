@@ -1,10 +1,18 @@
-<p align="center">
-  <img src="metrics/status.svg" alt="Status MFD" width="100%"/>
-</p>
-<p align="center">
-  <img src="metrics/radar.svg" alt="Contribution radar" width="49%"/>
-  <img src="metrics/engines.svg" alt="Language engines" width="49%"/>
-</p>
-<p align="center">
-  <img src="metrics/stores.svg" alt="Top projects and flight log" width="100%"/>
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="metrics/hero-dark.svg">
+  <img src="metrics/hero-light.svg" alt="Engineering summary" width="100%">
+</picture>
+
+<br><br>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="metrics/repos-dark.svg">
+  <img src="metrics/repos-light.svg" alt="Repositories I work on" width="100%">
+</picture>
+
+<br><br>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="metrics/craft-dark.svg">
+  <img src="metrics/craft-light.svg" alt="Languages and activity" width="100%">
+</picture>
