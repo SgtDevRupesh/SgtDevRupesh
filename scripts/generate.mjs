@@ -48,6 +48,10 @@ async function fetchData() {
     viewer {
       login name createdAt followers { totalCount }
       contributionsCollection {
+        restrictedContributionsCount
+        commitContributionsByRepository(maxRepositories: 100) {
+          contributions { totalCount } repository { ${REPO_FIELDS} }
+        }
         contributionCalendar { totalContributions weeks { contributionDays { date contributionCount weekday } } }
       }
       repositoriesContributedTo(first: 100, includeUserRepositories: false,
@@ -72,16 +76,20 @@ async function fetchData() {
     cursor = r.pageInfo.hasNextPage && repos.size < CONFIG.maxRepos ? r.pageInfo.endCursor : null;
   } while (cursor);
   for (const n of v.repositoriesContributedTo.nodes) if (!n.isFork) repos.set(n.nameWithOwner, n);
+  // Repos your commits landed in this year, including private org repos, if the token can read them.
+  const yearly = v.contributionsCollection.commitContributionsByRepository;
+  for (const { repository: n } of yearly) if (!n.isFork) repos.set(n.nameWithOwner, n);
+  const yearlyNames = new Set(yearly.map((c) => c.repository.nameWithOwner));
   const candidates = [...repos.values()]
-    .sort((a, b) => new Date(b.pushedAt) - new Date(a.pushedAt))
+    .sort((a, b) => yearlyNames.has(b.nameWithOwner) - yearlyNames.has(a.nameWithOwner) || new Date(b.pushedAt) - new Date(a.pushedAt))
     .slice(0, CONFIG.maxRepos);
 
   // Per-repo commits and line counts for you. GitHub answers 202 while it computes these; retry those.
   const me = v.login.toLowerCase();
   const stats = new Map();
   let pending = candidates;
-  for (let round = 0; round < 6 && pending.length; round++) {
-    if (round) await sleep(4000 * round);
+  for (let round = 0; round < 10 && pending.length; round++) {
+    if (round) await sleep(Math.min(5000 * round, 20000)); // ~2.5 min in total
     const retry = [];
     await pool(pending, 8, async (repo) => {
       const res = await fetch(`${API}/repos/${repo.nameWithOwner}/stats/contributors`, { headers });
@@ -100,7 +108,7 @@ async function fetchData() {
     });
     pending = retry;
   }
-  if (pending.length) console.warn(`stats still computing for ${pending.length} repos; they'll appear next run`);
+  const stillPending = pending;
 
   // Pull requests you authored, grouped by repo (search covers private repos the token can read).
   const prs = new Map();
@@ -124,6 +132,19 @@ async function fetchData() {
   const worked = candidates
     .filter((r) => stats.has(r.nameWithOwner))
     .map((r) => ({ ...r, ...stats.get(r.nameWithOwner), prs: prs.get(r.nameWithOwner) ?? 0 }));
+
+  // Diagnosis for the Actions log: where private work went missing, if it did.
+  const restricted = v.contributionsCollection.restrictedContributionsCount;
+  console.log(`token sees ${repos.size} repos (${[...repos.values()].filter((r) => r.isPrivate).length} private); ` +
+    `inspected ${candidates.length}, found your commits in ${worked.length}`);
+  console.log(`commits this year by repo: ${yearly.map((c) => `${c.repository.nameWithOwner} (${c.contributions.totalCount})`).join(", ") || "none"}`);
+  if (restricted) console.warn(`::warning::${restricted} contributions this year are in repos this token cannot read. ` +
+    "Give the token the `repo` scope and authorize it for your organisation's SSO (Settings > Developer settings > Tokens > Configure SSO).");
+  if (stillPending.length) console.warn(`::warning::GitHub was still computing stats for ${stillPending.length} repos ` +
+    `(${stillPending.map((r) => r.nameWithOwner).join(", ")}); they'll appear on the next run.`);
+  const noMatch = yearly.filter((c) => !stats.has(c.repository.nameWithOwner) && !stillPending.includes(repos.get(c.repository.nameWithOwner)));
+  if (noMatch.length) console.warn(`::warning::No commits attributed to ${v.login} in: ${noMatch.map((c) => c.repository.nameWithOwner).join(", ")}. ` +
+    "If you commit there with another email, add it to your GitHub account (Settings > Emails).");
 
   return {
     login: v.login,
@@ -310,7 +331,7 @@ function heroCard(d, t) {
   const stats = [
     [compact(d.additions), "lines of code written"],
     [num(d.commits), "commits"],
-    [num(d.prTotal), "pull requests"],
+    [num(d.prTotal), d.prTotal === 1 ? "pull request" : "pull requests"],
     [num(d.repoCount), `repositories · ${d.privateCount} private`],
   ];
   stats.forEach(([v, label], i) => {
