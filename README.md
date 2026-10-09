@@ -1,20 +1,5 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="metrics/hero-dark.svg">
-  <img src="metrics/hero-light.svg" alt="Rupesh Prasad, Flight Simulation Engineer" width="100%">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="metrics/stats-dark.svg">
-  <img src="metrics/stats-light.svg" alt="Lines of code, commits, pull requests and repositories" width="100%">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="metrics/craft-dark.svg">
-  <img src="metrics/craft-light.svg" alt="Languages and this year's activity" width="100%">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="metrics/repos-dark.svg">
-  <img src="metrics/repos-light.svg" alt="Repositories I work on" width="100%">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="metrics/teams-dark.svg">
-  <img src="metrics/teams-light.svg" alt="Organisations and teams I contribute to" width="100%">
-</picture>
+<img src="metrics/hero.svg" alt="Rupesh Prasad, Flight Simulation Engineer" width="100%">
+<img src="metrics/stats.svg" alt="Lines written, commits, pull requests and repositories" width="100%">
+<img src="metrics/biggest.svg" alt="Biggest contributions by lines written" width="100%">
+<img src="metrics/mid.svg" alt="Recent work and top languages" width="100%">
+<img src="metrics/bottom.svg" alt="This year's contributions and teams" width="100%">

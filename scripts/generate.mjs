@@ -259,7 +259,11 @@ function teams(repos, login) {
 
 function digest(raw) {
   const hidden = new Set(CONFIG.hide.map((s) => s.toLowerCase()));
-  const repos = raw.repos.map((r) => ({ ...r, hidden: hidden.has(r.nameWithOwner.toLowerCase()) }));
+  // The profile repo (login/login) only holds these cards, so it isn't counted anywhere.
+  const profile = `${raw.login}/${raw.login}`.toLowerCase();
+  const repos = raw.repos
+    .filter((r) => r.nameWithOwner.toLowerCase() !== profile)
+    .map((r) => ({ ...r, hidden: hidden.has(r.nameWithOwner.toLowerCase()) }));
   const sum = (k) => repos.reduce((s, r) => s + r[k], 0);
 
   // Language mix: each repo's language split, weighted by the lines you added there.
@@ -298,6 +302,7 @@ function digest(raw) {
     repoCount: repos.length,
     privateCount: repos.filter((r) => r.isPrivate).length,
     top: [...repos].sort((a, b) => b.commits - a.commits).slice(0, CONFIG.listRepos),
+    biggest: [...repos].sort((a, b) => b.additions - a.additions).slice(0, CONFIG.listRepos),
     recent: [...repos].sort((a, b) => (b.lastActive ?? b.pushedAt).localeCompare(a.lastActive ?? a.pushedAt)).slice(0, CONFIG.listRepos),
     teams: teams(repos, raw.login),
     languages, days, streak, best, busiest,
@@ -307,21 +312,15 @@ function digest(raw) {
 
 // ---------- rendering ----------
 
-// Apple Store look: soft rounded tiles, two-tone headlines, one warm accent for eyebrows,
-// and gradient colour used sparingly for the numbers that matter.
-const THEMES = {
-  light: {
-    fg: "#1d1d1f", fg2: "#6e6e73", tile: "#f5f5f7", line: "rgba(0,0,0,.08)", eyebrow: "#bf4800",
-    rings: ["#ff2d55", "#34c759", "#007aff"], spark: "#0071e3", pill: "rgba(0,0,0,.06)",
-    grad: ["#0066cc", "#8a3ffc"], aurora: [["#5ac8fa", 0.55], ["#af52de", 0.4], ["#ff9f0a", 0.3]],
-  },
-  dark: {
-    fg: "#f5f5f7", fg2: "#86868b", tile: "#1d1d1f", line: "rgba(255,255,255,.1)", eyebrow: "#f56300",
-    rings: ["#ff375f", "#30d158", "#0a84ff"], spark: "#2997ff", pill: "rgba(255,255,255,.12)",
-    grad: ["#2997ff", "#bf5af2"], aurora: [["#0a84ff", 0.5], ["#bf5af2", 0.42], ["#ff9f0a", 0.22]],
-  },
+// "Wrapped"-style colour blocking: every card is a saturated block with heavy type, sticker
+// labels and a few playful shapes. Cards carry their own backgrounds, so one version works
+// on both GitHub themes.
+const C = {
+  ink: "#16123A", white: "#ffffff", violet: "#5B2EFF", lilac: "#B9A4FF",
+  lime: "#C8F560", pink: "#FF5DA2", cyan: "#3DD9F5", orange: "#FF8A3D", yellow: "#FFD93D",
 };
-const W = 1000, GAP = 20, RADIUS = 28, PAD = 36;
+const BARS = [C.lime, C.pink, C.cyan, C.orange, C.yellow, C.lilac];
+const W = 1000, GAP = 20, RADIUS = 32, PAD = 40;
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const num = (n) => Math.round(n).toLocaleString("en-US");
@@ -329,199 +328,168 @@ const compact = (n) =>
   n >= 1e6 ? `${(n / 1e6).toFixed(n >= 1e7 ? 0 : 1)}M` : n >= 1e4 ? `${Math.round(n / 1e3)}K` : n >= 1e3 ? `${(n / 1e3).toFixed(1)}K` : String(n);
 const ago = (iso) => {
   const d = Math.floor((Date.now() - new Date(iso)) / 864e5);
-  return d < 1 ? "today" : d === 1 ? "yesterday" : d < 30 ? `${d} days ago` : d < 365 ? `${Math.floor(d / 30)} mo ago` : `${Math.floor(d / 365)} yr ago`;
+  return d < 1 ? "today" : d === 1 ? "yesterday" : d < 30 ? `${d}d ago` : d < 365 ? `${Math.floor(d / 30)}mo ago` : `${Math.floor(d / 365)}y ago`;
 };
 const clip = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
-const plural = (n, word) => `${num(n)} ${word}${n === 1 ? "" : "s"}`;
-const textWidth = (s, size, weight = 400) => s.length * size * (weight >= 600 ? 0.5 : 0.48); // Inter, roughly
+const plural = (n, one, many = one + "s") => `${num(n)} ${n === 1 ? one : many}`;
+const textWidth = (s, size, weight = 400) => s.length * size * (weight >= 800 ? 0.6 : weight >= 600 ? 0.55 : 0.5); // Inter, roughly
 
-function text(x, y, s, { size = 14, fill, weight = 400, anchor = "start", track = 0 } = {}) {
+function text(x, y, s, { size = 14, fill = C.ink, weight = 400, anchor = "start", track = 0, opacity = 1 } = {}) {
   return `<text x="${x}" y="${y}" font-size="${size}" font-weight="${weight}" fill="${fill}" text-anchor="${anchor}"` +
-    (track ? ` letter-spacing="${track}"` : "") + `>${esc(s)}</text>`;
+    (track ? ` letter-spacing="${track}"` : "") + (opacity < 1 ? ` fill-opacity="${opacity}"` : "") + `>${esc(s)}</text>`;
 }
-const eyebrow = (x, y, s, t) => text(x, y, s, { size: 15, weight: 600, fill: t.eyebrow });
-const headline = (x, y, s, t) => text(x - 1, y, s, { size: 32, weight: 600, fill: t.fg, track: -0.8 });
+const title = (x, y, s, fill = C.ink) => text(x, y, s, { size: 40, weight: 900, fill, track: -1.4 });
+
+/** A rounded sticker label; `rotate` tilts it around its own centre. */
+function pill(x, y, label, { bg, fg, size = 14, rotate = 0, anchor = "start" } = {}) {
+  const w = textWidth(label, size, 800) + size * 1.6, h = size + size * 1.1;
+  const x0 = anchor === "end" ? x - w : x;
+  const cx = x0 + w / 2, cy = y + h / 2;
+  return `<g transform="rotate(${rotate} ${cx.toFixed(1)} ${cy.toFixed(1)})">` +
+    `<rect x="${x0.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="${(h / 2).toFixed(1)}" fill="${bg}"/>` +
+    text(cx.toFixed(1), (cy + size * 0.36).toFixed(1), label, { size, weight: 800, fill: fg, anchor: "middle" }) + `</g>`;
+}
+
+function starburst(cx, cy, r, points, fill, cls = "") {
+  const pts = [];
+  for (let i = 0; i < points * 2; i++) {
+    const a = (Math.PI * i) / points, rr = i % 2 ? r * 0.55 : r;
+    pts.push(`${(cx + rr * Math.sin(a)).toFixed(1)},${(cy - rr * Math.cos(a)).toFixed(1)}`);
+  }
+  return `<g class="${cls}" style="transform-origin:${cx}px ${cy}px"><polygon points="${pts.join(" ")}" fill="${fill}"/></g>`;
+}
 
 const assets = {};
 async function loadAssets() {
   assets.font = (await readFile(new URL("assets/inter-var.woff2", ROOT))).toString("base64");
 }
 
-/** A rounded tile at (x, y); `body` uses tile-local coordinates and is clipped to the tile. */
-function tile(id, x, y, w, h, t, body) {
+/** A rounded colour block at (x, y); `body` uses block-local coordinates and is clipped to it. */
+function tile(id, x, y, w, h, fill, body) {
   return `<clipPath id="c-${id}"><rect width="${w}" height="${h}" rx="${RADIUS}"/></clipPath>` +
-    `<g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="${RADIUS}" fill="${t.tile}"/>` +
+    `<g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="${RADIUS}" fill="${fill}"/>` +
     `<g clip-path="url(#c-${id})">${body}</g></g>`;
 }
 
-function svg(h, t, label, body) {
+function svg(h, label, body) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${h}" viewBox="0 0 ${W} ${h}" role="img" aria-label="${esc(label)}">
-<defs>
-<linearGradient id="num" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.grad[0]}"/><stop offset="1" stop-color="${t.grad[1]}"/></linearGradient>
-<filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="58"/></filter>
-</defs>
 <style>
 @font-face{font-family:"Inter Embedded";src:url(data:font/woff2;base64,${assets.font}) format("woff2");font-weight:100 900;font-display:swap}
-text{font-family:"Inter Embedded",-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Helvetica,Arial,sans-serif;font-feature-settings:"tnum" 1}
-.drift{animation:drift 14s ease-in-out infinite alternate}
-@keyframes drift{from{transform:translate(0,0)}to{transform:translate(-24px,14px)}}
-@media (prefers-reduced-motion:reduce){.drift{animation:none}}
+text{font-family:"Inter Embedded",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-feature-settings:"tnum" 1}
+.spin{animation:spin 24s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
 </style>
 ${body}
 </svg>`;
 }
 
-function heroCard(d, t) {
-  const h = 360;
-  // A soft aurora of colour on the right, the way Apple's product pages glow.
-  const [c1, c2, c3] = t.aurora;
-  let b = `<g filter="url(#soft)"><g class="drift">` +
-    `<circle cx="790" cy="110" r="170" fill="${c1[0]}" fill-opacity="${c1[1]}"/>` +
-    `<circle cx="900" cy="280" r="160" fill="${c2[0]}" fill-opacity="${c2[1]}"/>` +
-    `<circle cx="670" cy="300" r="120" fill="${c3[0]}" fill-opacity="${c3[1]}"/></g></g>`;
-  b += eyebrow(PAD + 8, 78, CONFIG.role, t);
-  b += text(PAD + 5, 150, `${d.name}.`, { size: 64, weight: 600, fill: t.fg, track: -1.9 });
-  CONFIG.tagline.forEach((line, i) => (b += text(PAD + 8, 200 + i * 32, line, { size: 24, weight: 600, fill: t.fg2, track: -0.5 })));
-  const updated = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-  b += text(PAD + 8, h - PAD - 4, `Updated ${updated}`, { size: 14, fill: t.fg2 });
-  return svg(h + GAP, t, `${d.name}: ${CONFIG.role}`, tile("hero", 0, 0, W, h, t, b));
+function heroCard(d) {
+  const h = 420;
+  let b = `<circle cx="905" cy="40" r="190" fill="${C.lime}"/>` +
+    `<circle cx="1010" cy="345" r="135" fill="${C.pink}"/>` +
+    `<circle cx="560" cy="430" r="70" fill="none" stroke="${C.yellow}" stroke-width="18"/>` +
+    starburst(820, 214, 48, 12, C.white, "spin");
+  b += pill(PAD, 44, CONFIG.role, { bg: C.lime, fg: C.ink, size: 15 });
+  const [first, ...rest] = d.name.split(" ");
+  b += text(PAD - 4, 176, first, { size: 100, weight: 900, fill: C.white, track: -4.5 });
+  b += text(PAD - 4, 272, (rest.join(" ") || "") + ".", { size: 100, weight: 900, fill: C.white, track: -4.5 });
+  CONFIG.tagline.forEach((line, i) => (b += text(PAD, 322 + i * 28, line, { size: 20, weight: 600, fill: C.white, opacity: 0.85 })));
+  b += pill(600, 262, `${compact(d.additions)} lines`, { bg: C.yellow, fg: C.ink, size: 22, rotate: -8 });
+  b += pill(640, 92, `${plural(d.privateCount, "private repo")}`, { bg: C.white, fg: C.ink, size: 18, rotate: 6 });
+  return svg(h + GAP, `${d.name}, ${CONFIG.role}`, tile("hero", 0, 0, W, h, C.violet, b));
 }
 
-function statsCard(d, t) {
-  const h = 300, big = 580;
-  let a = text(PAD, 58, "Lines of code written", { size: 17, weight: 600, fill: t.fg2 });
-  a += text(PAD - 6, 190, compact(d.additions), { size: 128, weight: 600, fill: "url(#num)", track: -5 });
-  a += text(PAD, 232, `Across ${num(d.repoCount)} ${d.repoCount === 1 ? "repository" : "repositories"}, public and private.`, { size: 17, fill: t.fg2 });
-  a += text(PAD, 256, "Bulk imports and generated files not counted.", { size: 15, fill: t.fg2 });
-  let b = tile("lines", 0, 0, big, h, t, a);
-
-  const small = [["Commits", d.commits], ["Pull requests", d.prTotal], ["Repositories", d.repoCount], ["Private", d.privateCount]];
-  const sw = (W - big - 2 * GAP) / 2, sh = (h - GAP) / 2;
-  small.forEach(([label, v], i) => {
-    const x = big + GAP + (i % 2) * (sw + GAP), y = Math.floor(i / 2) * (sh + GAP);
-    b += tile(`s${i}`, x, y, sw, sh, t,
-      text(24, 42, label, { size: 15, weight: 600, fill: t.fg2 }) + text(22, 108, num(v), { size: 48, weight: 600, fill: t.fg, track: -1.6 }));
+function statsCard(d) {
+  const h = 210, w = (W - 3 * GAP) / 4;
+  const items = [
+    [C.lime, "LINES WRITTEN", compact(d.additions), "imports not counted"],
+    [C.pink, "COMMITS", num(d.commits), "all time"],
+    [C.cyan, "PULL REQUESTS", num(d.prTotal), "opened"],
+    [C.orange, "REPOSITORIES", num(d.repoCount), `${num(d.privateCount)} private`],
+  ];
+  let b = "";
+  items.forEach(([bg, label, v, sub], i) => {
+    b += tile(`s${i}`, i * (w + GAP), 0, w, h, bg,
+      text(28, 46, label, { size: 13, weight: 800, track: 1.2 }) +
+      text(24, 140, v, { size: Math.min(76, Math.floor((w - 48) / (v.length * 0.6))), weight: 900, track: -3 }) +
+      text(28, 178, sub, { size: 14, weight: 600, opacity: 0.7 }));
   });
-  return svg(h + GAP, t, "Engineering totals", b);
+  return svg(h + GAP, "Totals", b);
 }
 
-function ringArc(cx, cy, r, frac) {
-  const f = Math.min(Math.max(frac, 0.02), 0.9999), a = f * 2 * Math.PI;
-  const x = (cx + r * Math.sin(a)).toFixed(2), y = (cy - r * Math.cos(a)).toFixed(2);
-  return `M${cx} ${cy - r}A${r} ${r} 0 ${f > 0.5 ? 1 : 0} 1 ${x} ${y}`;
+function biggestCard(d) {
+  const rows = d.biggest.slice(0, 6), rowH = 62, top = 124, h = top + rows.length * rowH + 20;
+  const x0 = 380, x1 = W - PAD - 70, max = Math.max(...rows.map((r) => r.additions), 1);
+  let b = title(PAD, 84, "Biggest contributions", C.white) +
+    pill(W - PAD, 56, "by lines written", { bg: C.lilac, fg: C.ink, size: 14, anchor: "end" });
+  rows.forEach((r, i) => {
+    const y = top + i * rowH, color = BARS[i % BARS.length];
+    const bw = Math.max(18, (r.additions / max) * (x1 - x0));
+    const meta = [r.primaryLanguage?.name, r.isPrivate ? "private" : null, plural(r.commits, "commit")].filter(Boolean).join(" · ");
+    b += text(PAD, y + 31, String(i + 1).padStart(2, "0"), { size: 16, weight: 800, fill: color }) +
+      text(PAD + 42, y + 25, clip(r.hidden ? "Private project" : r.name, 24), { size: 20, weight: 800, fill: C.white, track: -0.4 }) +
+      text(PAD + 42, y + 45, meta, { size: 13, weight: 500, fill: C.white, opacity: 0.6 }) +
+      `<rect x="${x0}" y="${y + 9}" width="${bw.toFixed(1)}" height="34" rx="17" fill="${color}"/>` +
+      text(x0 + bw + 12, y + 32, compact(r.additions), { size: 18, weight: 800, fill: C.white });
+  });
+  return svg(h + GAP, "Biggest contributions", tile("big", 0, 0, W, h, C.ink, b));
 }
 
-/** Smooth line through points (Catmull-Rom converted to cubic Béziers). */
-function smooth(pts) {
-  let p = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const [p0, p1, p2, p3] = [pts[i - 1] ?? pts[i], pts[i], pts[i + 1], pts[i + 2] ?? pts[i + 1]];
-    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
-    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
-    p += `C${c1.map((v) => v.toFixed(1)).join(" ")} ${c2.map((v) => v.toFixed(1)).join(" ")} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
-  }
-  return p;
+function midCard(d) {
+  const h = 420, w = (W - GAP) / 2;
+  // Lately: where your latest commits and merged PRs landed.
+  let a = title(PAD, 84, "Lately") + text(PAD, 112, "Where my latest work landed.", { size: 15, weight: 600, opacity: 0.7 });
+  d.recent.slice(0, 5).forEach((r, i) => {
+    const y = 140 + i * 54;
+    a += text(PAD, y + 22, clip(r.hidden ? "Private project" : r.name, 22), { size: 20, weight: 800, track: -0.4 }) +
+      text(PAD, y + 41, [r.primaryLanguage?.name, r.isPrivate ? "private" : null].filter(Boolean).join(" · "), { size: 13, weight: 500, opacity: 0.65 }) +
+      pill(w - PAD, y + 6, ago(r.lastActive ?? r.pushedAt), { bg: C.ink, fg: C.lime, size: 13, anchor: "end" });
+  });
+  let b = tile("recent", 0, 0, w, h, C.lime, a);
+
+  // Top languages as a big numbered chart list.
+  const langs = d.languages.filter((l) => l.name !== "Other").slice(0, 5);
+  let c = title(PAD, 84, "Top languages");
+  langs.forEach((l, i) => {
+    const y = 150 + i * 54;
+    c += text(PAD, y, String(i + 1), { size: 40, weight: 900, track: -1 }) +
+      text(PAD + 48, y - 4, clip(l.name, 16), { size: 26, weight: 800, track: -0.6 }) +
+      text(w - PAD, y - 4, `${Math.round(l.pct * 100)}%`, { size: 22, weight: 800, anchor: "end" });
+  });
+  b += tile("langs", w + GAP, 0, w, h, C.pink, c);
+  return svg(h + GAP, "Lately and top languages", b);
 }
 
-function craftCard(d, t) {
+function bottomCard(d) {
   const h = 380, w = (W - GAP) / 2;
-
-  // Languages as activity rings: one ring per top language, filled to its share.
-  const named = d.languages.filter((l) => l.name !== "Other");
-  const top = named.slice(0, 3);
-  let a = eyebrow(PAD, 54, "Languages", t) + headline(PAD, 94, `Mostly ${top[0]?.name ?? "code"}.`, t);
-  const cx = 138, cy = 248, sw = 20;
-  top.forEach((l, i) => {
-    const r = 94 - i * (sw + 4), c = t.rings[i];
-    a += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c}" stroke-opacity=".16" stroke-width="${sw}"/>` +
-      `<path d="${ringArc(cx, cy, r, l.pct)}" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
-  });
-  top.forEach((l, i) => {
-    const y = 182 + i * 50;
-    a += text(272, y, l.name, { size: 15, weight: 600, fill: t.fg2 }) +
-      text(271, y + 26, `${(l.pct * 100).toFixed(0)}%`, { size: 26, weight: 600, fill: t.rings[i], track: -0.5 });
-  });
-  const rest = named.slice(3).map((l) => l.name);
-  if (rest.length) a += text(272, 182 + top.length * 50 + 4, clip(`Also ${rest.join(", ")}.`, 24), { size: 14, fill: t.fg2 });
-  let b = tile("langs", 0, 0, w, h, t, a);
-
-  // The year as a smooth weekly line, Health-app style.
+  // This year: the headline count over chunky weekly bars.
   const weeks = [];
   for (let i = 0; i < d.days.length; i += 7) weeks.push(d.days.slice(i, i + 7).reduce((s, x) => s + x.contributionCount, 0));
-  const max = Math.max(...weeks, 1), x0 = PAD, x1 = w - PAD, y0 = 136, y1 = 280;
-  const pts = weeks.map((v, i) => [x0 + (i / (weeks.length - 1)) * (x1 - x0), y1 - (v / max) * (y1 - y0)]);
-  const line = smooth(pts);
-  let c = eyebrow(PAD, 54, "This year", t) + headline(PAD, 94, `${num(d.yearTotal)} contributions.`, t);
-  c += `<linearGradient id="spark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.spark}" stop-opacity=".28"/><stop offset="1" stop-color="${t.spark}" stop-opacity="0"/></linearGradient>` +
-    `<path d="${line}L${x1} ${y1}L${x0} ${y1}Z" fill="url(#spark)"/>` +
-    `<path d="${line}" fill="none" stroke="${t.spark}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>` +
-    `<line x1="${x0}" y1="${y1 + 0.5}" x2="${x1}" y2="${y1 + 0.5}" stroke="${t.line}"/>`;
-  const busy = new Date(d.busiest.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
-  [[plural(d.streak, "day"), "Current streak"], [plural(d.best, "day"), "Longest streak"], [String(d.busiest.contributionCount), `Busiest day, ${busy}`]]
-    .forEach(([v, label], i) => {
-      const x = PAD + i * 140;
-      c += text(x, 322, v, { size: 20, weight: 600, fill: t.fg, track: -0.3 }) + text(x, 344, label, { size: 13, fill: t.fg2 });
-    });
-  b += tile("year", w + GAP, 0, w, h, t, c);
-  return svg(h + GAP, t, "Languages and activity", b);
-}
-
-function reposCard(d, t) {
-  const rows = d.recent.slice(0, 6), rowH = 58, lw = 620, h = 140 + rows.length * rowH + 16;
-  const colC = 468, colL = lw - PAD;
-  let a = eyebrow(PAD, 54, "Recent work", t) + headline(PAD, 94, "Where the work happens.", t);
-  a += text(colC, 130, "Commits", { size: 13, weight: 600, fill: t.fg2, anchor: "end" }) +
-    text(colL, 130, "Lines", { size: 13, weight: 600, fill: t.fg2, anchor: "end" });
-  rows.forEach((r, i) => {
-    const y = 140 + i * rowH, name = clip(r.hidden ? "Private project" : r.name, 24);
-    a += `<line x1="${PAD}" y1="${y}" x2="${colL}" y2="${y}" stroke="${t.line}"/>`;
-    a += text(PAD, y + 26, name, { size: 17, weight: 600, fill: t.fg, track: -0.2 });
-    if (r.isPrivate) {
-      const px = PAD + textWidth(name, 17, 600) + 10;
-      a += `<rect x="${px.toFixed(0)}" y="${y + 12}" width="52" height="19" rx="9.5" fill="${t.pill}"/>` +
-        text(px + 26, y + 25.5, "Private", { size: 11, weight: 600, fill: t.fg2, anchor: "middle" });
-    }
-    a += text(PAD, y + 46, [r.primaryLanguage?.name, ago(r.lastActive ?? r.pushedAt)].filter(Boolean).join(" · "), { size: 13, fill: t.fg2 });
-    a += text(colC, y + 36, num(r.commits), { size: 17, weight: 600, fill: t.fg, anchor: "end" }) +
-      text(colL, y + 36, compact(r.additions), { size: 17, fill: t.fg2, anchor: "end" });
+  const max = Math.max(...weeks, 1), span = w - 2 * PAD, bw = span / weeks.length, base = 296;
+  let a = text(PAD - 4, 128, num(d.yearTotal), { size: 96, weight: 900, track: -4 }) +
+    text(PAD, 162, "contributions this year", { size: 18, weight: 700 });
+  weeks.forEach((v, i) => {
+    const bh = Math.max(4, (v / max) * 100);
+    a += `<rect x="${(PAD + i * bw + 1).toFixed(1)}" y="${(base - bh).toFixed(1)}" width="${(bw - 2.5).toFixed(1)}" height="${bh.toFixed(1)}" rx="2.5" fill="${C.ink}" fill-opacity="${v ? 1 : 0.2}"/>`;
   });
-  let b = tile("repos", 0, 0, lw, h, t, a);
+  const streak = `${num(d.streak)}-day streak`;
+  a += pill(PAD, 318, streak, { bg: C.ink, fg: C.cyan, size: 14 }) +
+    pill(PAD + textWidth(streak, 14, 800) + 34, 318, `best ${plural(d.best, "day")}`, { bg: C.white, fg: C.ink, size: 14 });
+  let b = tile("year", 0, 0, w, h, C.cyan, a);
 
-  // The most active project gets the product shot.
-  const star = d.top.find((r) => !r.hidden) ?? d.top[0];
-  const pw = W - lw - GAP;
-  let p = eyebrow(PAD, 54, "Most active", t);
-  if (star) {
-    p += text(PAD - 1, 92, clip(star.name, 19), { size: 28, weight: 600, fill: t.fg, track: -0.7 }) +
-      text(PAD, 120, [plural(star.commits, "commit"), star.primaryLanguage?.name, star.isPrivate ? "Private" : null].filter(Boolean).join(" · "), { size: 15, fill: t.fg2 });
-  }
-  if (star) {
-    // Ring: this repo's share of all your commits.
-    const share = star.commits / Math.max(1, d.commits), cx = pw / 2, cy = h - 168, r = 96;
-    p += `<linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.grad[0]}"/><stop offset="1" stop-color="${t.grad[1]}"/></linearGradient>` +
-      `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${t.pill}" stroke-width="22"/>` +
-      `<path d="${ringArc(cx, cy, r, share)}" fill="none" stroke="url(#ring)" stroke-width="22" stroke-linecap="round"/>` +
-      text(cx, cy + 8, `${Math.round(share * 100)}%`, { size: 40, weight: 600, fill: t.fg, anchor: "middle", track: -1 }) +
-      text(cx, cy + 32, "of all my commits", { size: 13, fill: t.fg2, anchor: "middle" });
-  }
-  b += tile("star", lw + GAP, 0, pw, h, t, p);
-  return svg(h + GAP, t, "Repositories I work on", b);
-}
-
-function teamsCard(d, t) {
-  const shown = d.teams.slice(0, 3);
-  if (!shown.length) return svg(1, t, "Teams", "");
-  const h = 176, w = (W - GAP * (shown.length - 1)) / shown.length;
-  let b = "";
+  // Teams: organisations and other people's repos you've shipped to.
+  const shown = d.teams.slice(0, 4);
+  let c = starburst(w - 70, h - 60, 92, 14, C.ink, "spin") + title(PAD, 84, "Teams");
+  if (!shown.length) c += text(PAD, 130, "Solo so far.", { size: 20, weight: 700 });
   shown.forEach((g, i) => {
-    const more = i === shown.length - 1 && d.teams.length > 3 ? ` · +${d.teams.length - 3} more teams` : "";
-    b += tile(`team${i}`, i * (w + GAP), 0, w, h, t,
-      eyebrow(PAD, 52, g.isOrg ? "Organisation" : "Collaboration", t) +
-      text(PAD - 1, 92, clip(g.owner, Math.floor((w - PAD * 2) / 15)), { size: 28, weight: 600, fill: t.fg, track: -0.7 }) +
-      text(PAD, 124, `${plural(g.commits, "commit")} · ${compact(g.additions)} lines`, { size: 15, fill: t.fg2 }) +
-      text(PAD, 146, `${num(g.repos)} ${g.repos === 1 ? "repository" : "repositories"}${more}`, { size: 15, fill: t.fg2 }));
+    const y = 120 + i * 58;
+    c += text(PAD, y + 24, clip(g.owner, 20), { size: 24, weight: 800, track: -0.6 }) +
+      text(PAD, y + 45, `${plural(g.commits, "commit")} · ${compact(g.additions)} lines · ${plural(g.repos, "repo")}`, { size: 14, weight: 600, opacity: 0.7 });
   });
-  return svg(h + GAP, t, "Teams I contribute to", b);
+  if (d.teams.length > 4) c += pill(PAD, h - 58, `+${d.teams.length - 4} more`, { bg: C.ink, fg: C.orange, size: 13 });
+  b += tile("teams", w + GAP, 0, w, h, C.orange, c);
+  return svg(h + GAP, "This year and teams", b);
 }
 
 // ---------- main ----------
@@ -547,8 +515,6 @@ if (!mock) {
 await loadAssets();
 const d = digest(mock ? mockData() : await fetchData());
 await mkdir(new URL("metrics/", ROOT), { recursive: true });
-const cards = { hero: heroCard, stats: statsCard, craft: craftCard, repos: reposCard, teams: teamsCard };
-for (const [name, render] of Object.entries(cards))
-  for (const [theme, t] of Object.entries(THEMES))
-    await writeFile(new URL(`metrics/${name}-${theme}.svg`, ROOT), render(d, t));
+const cards = { hero: heroCard, stats: statsCard, biggest: biggestCard, mid: midCard, bottom: bottomCard };
+for (const [name, render] of Object.entries(cards)) await writeFile(new URL(`metrics/${name}.svg`, ROOT), render(d));
 console.log(`${d.login}: ${d.repoCount} repos (${d.privateCount} private), ${d.commits} commits, ${d.additions} lines added, ${d.prTotal} PRs`);
