@@ -16,7 +16,8 @@ const API = "https://api.github.com";
 
 // ---------- data ----------
 
-const token = process.env.GITHUB_TOKEN;
+const rawToken = process.env.GITHUB_TOKEN ?? "";
+const token = rawToken.trim(); // pasted secrets often carry a trailing newline
 const headers = {
   Authorization: `bearer ${token}`,
   Accept: "application/vnd.github+json",
@@ -421,7 +422,23 @@ function craftCard(d, t) {
 // ---------- main ----------
 
 const mock = process.argv.includes("--mock");
-if (!mock && !token) throw new Error("Set GITHUB_TOKEN or pass --mock");
+if (!mock && !token) {
+  console.log("::error::GHUB_TOKEN is empty here. Check the secret exists (repo secrets, or the 'production' environment).");
+  process.exit(1);
+}
+if (!mock) {
+  // Describe the token without revealing it, then check GitHub accepts it.
+  const kind = token.startsWith("ghp_") ? "classic (ghp_)" : token.startsWith("github_pat_") ? "fine-grained (github_pat_)" : `unrecognised prefix "${token.slice(0, 3)}…"`;
+  console.log(`token: ${kind}, ${token.length} chars, ${rawToken === token ? "no" : "had"} surrounding whitespace`);
+  const me = await fetch(`${API}/user`, { headers });
+  if (me.status === 401) {
+    console.log(`::error::GitHub rejected GHUB_TOKEN (401 Bad credentials). It is ${kind}, ${token.length} chars ` +
+      "(a classic token is 40). It's revoked, expired, or not the value you meant to paste. " +
+      "If a GHUB_TOKEN exists under Settings > Environments > production, that one is used, not the repo secret.");
+    process.exit(1);
+  }
+  console.log(`token accepted for ${(await me.json()).login}; scopes: ${me.headers.get("x-oauth-scopes") || "(fine-grained, no scope list)"}`);
+}
 await loadAssets();
 const d = digest(mock ? mockData() : await fetchData());
 await mkdir(new URL("metrics/", ROOT), { recursive: true });
