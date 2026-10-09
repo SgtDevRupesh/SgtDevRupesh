@@ -1,5 +1,6 @@
 // Renders the profile cards into metrics/<card>-{light,dark}.svg.
 // Usage: GITHUB_TOKEN=... node scripts/generate.mjs   (or --mock for an offline preview)
+import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const CONFIG = {
@@ -516,5 +517,15 @@ await loadAssets();
 const d = digest(mock ? mockData() : await fetchData());
 await mkdir(new URL("metrics/", ROOT), { recursive: true });
 const cards = { hero: heroCard, stats: statsCard, biggest: biggestCard, mid: midCard, bottom: bottomCard };
-for (const [name, render] of Object.entries(cards)) await writeFile(new URL(`metrics/${name}.svg`, ROOT), render(d));
+// Each card's README link carries a fingerprint of its contents, so GitHub's image caches
+// fetch a fresh copy whenever a card changes instead of serving the old one for minutes.
+const readmeUrl = new URL("README.md", ROOT);
+let readme = await readFile(readmeUrl, "utf8");
+for (const [name, render] of Object.entries(cards)) {
+  const out = render(d);
+  await writeFile(new URL(`metrics/${name}.svg`, ROOT), out);
+  const v = createHash("sha1").update(out).digest("hex").slice(0, 8);
+  readme = readme.replace(new RegExp(`metrics/${name}\\.svg(\\?v=[0-9a-f]+)?`, "g"), `metrics/${name}.svg?v=${v}`);
+}
+if (!mock) await writeFile(readmeUrl, readme);
 console.log(`${d.login}: ${d.repoCount} repos (${d.privateCount} private), ${d.commits} commits, ${d.additions} lines added, ${d.prTotal} PRs`);
