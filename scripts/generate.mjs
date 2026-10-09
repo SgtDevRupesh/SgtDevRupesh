@@ -5,7 +5,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const CONFIG = {
   role: "Developer",
-  tagline: ["I love simulators!!"],
+  tagline: ["Flight sims, mods and the odd side project."],
   maxRepos: 150, // most recently pushed repos to inspect for your commits
   bulkCommitLines: 10_000, // a single commit adding more than this is an import or generated code, not written lines
   listRepos: 8,
