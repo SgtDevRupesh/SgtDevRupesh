@@ -3,8 +3,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const CONFIG = {
-  role: "Flight Simulation Engineer",
-  tagline: ["Avionics, flight models and the tooling", "that keeps virtual aircraft in the air."],
+  role: "Developer",
+  tagline: ["I love simulators!!"],
   maxRepos: 150, // most recently pushed repos to inspect for your commits
   bulkCommitLines: 10_000, // a single commit adding more than this is an import or generated code, not written lines
   listRepos: 8,
