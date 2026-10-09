@@ -86,18 +86,23 @@ async function fetchData() {
   // with per-commit line counts. Unlike /stats/contributors this isn't a lazily built cache.
   const stats = new Map();
   const failed = [];
+  const noContents = [];
   await pool(candidates, 4, async (repo) => {
     const [owner, name] = repo.nameWithOwner.split("/");
     let commits = 0, additions = 0, deletions = 0, after = null;
     try {
       for (let page = 0; page < 30; page++) {
         const d = await gql(`query($owner: String!, $name: String!, $author: ID!, $after: String) {
-          repository(owner: $owner, name: $name) { defaultBranchRef { target { ... on Commit {
+          repository(owner: $owner, name: $name) { isEmpty defaultBranchRef { target { ... on Commit {
             history(first: 100, after: $after, author: {id: $author}) {
               totalCount pageInfo { hasNextPage endCursor } nodes { additions deletions }
             } } } } } }`, { owner, name, author: v.id, after });
         const h = d.repository?.defaultBranchRef?.target?.history;
-        if (!h) break; // empty repo
+        if (!h) {
+          // A non-empty repo without readable history means the token can list it but not read its contents.
+          if (!d.repository?.isEmpty) noContents.push(repo.nameWithOwner);
+          break;
+        }
         commits = h.totalCount;
         for (const n of h.nodes) { additions += n.additions; deletions += n.deletions; }
         if (!h.pageInfo.hasNextPage) break;
@@ -139,6 +144,9 @@ async function fetchData() {
   console.log(`commits this year by repo: ${yearly.map((c) => `${c.repository.nameWithOwner} (${c.contributions.totalCount})`).join(", ") || "none"}`);
   if (restricted) console.warn(`::warning::${restricted} contributions this year are in repos this token cannot read. ` +
     "Give the token the `repo` scope and authorize it for your organisation's SSO (Settings > Developer settings > Tokens > Configure SSO).");
+  if (noContents.length) console.warn(`::warning::The token can see but not read the commits of ${noContents.length} repos ` +
+    `(${noContents.join(", ")}). Use a classic token with the \`repo\` scope (fine-grained tokens need Contents: Read, ` +
+    "and can't reach repos owned by other users at all).");
   if (failed.length) console.warn(`::warning::Could not read commit history for ${failed.length} repos: ${failed.join("; ")}`);
 
   return {
