@@ -93,32 +93,70 @@ async function fetchData() {
     .sort((a, b) => yearlyNames.has(b.nameWithOwner) - yearlyNames.has(a.nameWithOwner) || new Date(b.pushedAt) - new Date(a.pushedAt))
     .slice(0, CONFIG.maxRepos);
 
-  // Your commits on each repo's default branch, matched to your account (all linked emails),
-  // with per-commit line counts. Unlike /stats/contributors this isn't a lazily built cache.
+  // Pull requests you opened, grouped by repo (search covers private repos the token can read).
+  // Merged ones also carry their merge commit, so squash merges credited to someone else still count.
+  const prs = new Map();
+  const mergedPrs = new Map();
+  let prTotal = 0;
+  cursor = null;
+  for (let page = 0; page < 10; page++) {
+    const d = await gql(`query($q: String!, $cursor: String) {
+      search(type: ISSUE, query: $q, first: 100, after: $cursor) {
+        issueCount pageInfo { hasNextPage endCursor }
+        nodes { ... on PullRequest { merged additions deletions repository { nameWithOwner }
+          mergeCommit { oid } commits { totalCount } } }
+      } }`, { q: `is:pr author:${v.login}`, cursor });
+    prTotal = d.search.issueCount;
+    for (const n of d.search.nodes) {
+      const k = n.repository?.nameWithOwner;
+      if (!k) continue;
+      prs.set(k, (prs.get(k) ?? 0) + 1);
+      if (n.merged) mergedPrs.set(k, [...(mergedPrs.get(k) ?? []), n]);
+    }
+    if (!d.search.pageInfo.hasNextPage) break;
+    cursor = d.search.pageInfo.endCursor;
+  }
+
+  // Your commits on each repo's default branch. In your own repos, commits you authored. In team
+  // repos, also commits that list you as a co-author, since squash merges are often credited to
+  // whoever pressed merge. Then merged PRs of yours whose merge commit wasn't credited to you.
+  const me = v.login.toLowerCase();
   const stats = new Map();
   const failed = [];
   const noContents = [];
   const bulkSkipped = [];
+  const teamCredit = [];
   await pool(candidates, 4, async (repo) => {
     const [owner, name] = repo.nameWithOwner.split("/");
-    let commits = 0, additions = 0, deletions = 0, bulk = 0, after = null;
+    const team = owner.toLowerCase() !== me;
+    let commits = 0, coAuthored = 0, viaPrs = 0, additions = 0, deletions = 0, bulk = 0, after = null;
+    const mine = new Set();
+    const add = (a, dl) => {
+      if (a > CONFIG.bulkCommitLines) bulk++;
+      else { additions += a; deletions += dl; }
+    };
     try {
       for (let page = 0; page < 75; page++) {
-        const d = await gql(`query($owner: String!, $name: String!, $author: ID!, $after: String) {
+        const d = await gql(`query($owner: String!, $name: String!, $author: CommitAuthor, $after: String) {
           repository(owner: $owner, name: $name) { isEmpty defaultBranchRef { target { ... on Commit {
-            history(first: 40, after: $after, author: {id: $author}) {
-              totalCount pageInfo { hasNextPage endCursor } nodes { additions deletions }
-            } } } } } }`, { owner, name, author: v.id, after });
+            history(first: 40, after: $after, author: $author) {
+              totalCount pageInfo { hasNextPage endCursor }
+              nodes { oid additions deletions author { user { login } } authors(first: 8) { nodes { user { login } } } }
+            } } } } } }`, { owner, name, author: team ? null : { id: v.id }, after });
         const h = d.repository?.defaultBranchRef?.target?.history;
         if (!h) {
           // A non-empty repo without readable history means the token can list it but not read its contents.
           if (!d.repository?.isEmpty) noContents.push(repo.nameWithOwner);
           break;
         }
-        commits = h.totalCount;
         for (const n of h.nodes) {
-          if (n.additions > CONFIG.bulkCommitLines) { bulk++; continue; }
-          additions += n.additions; deletions += n.deletions;
+          const isAuthor = !team || n.author?.user?.login?.toLowerCase() === me;
+          const isCo = !isAuthor && n.authors.nodes.some((a) => a.user?.login?.toLowerCase() === me);
+          if (!isAuthor && !isCo) continue;
+          commits++;
+          if (isCo) coAuthored++;
+          mine.add(n.oid);
+          add(n.additions, n.deletions);
         }
         if (!h.pageInfo.hasNextPage) break;
         after = h.pageInfo.endCursor;
@@ -126,28 +164,16 @@ async function fetchData() {
     } catch (e) {
       failed.push(`${repo.nameWithOwner}: ${e.message.slice(0, 120)}`);
     }
+    for (const pr of mergedPrs.get(repo.nameWithOwner) ?? []) {
+      if (pr.mergeCommit && mine.has(pr.mergeCommit.oid)) continue; // already credited above
+      viaPrs += pr.commits.totalCount;
+      add(pr.additions, pr.deletions);
+    }
+    commits += viaPrs;
+    if (team && (coAuthored || viaPrs)) teamCredit.push(`${repo.nameWithOwner}: ${commits - coAuthored - viaPrs} authored, ${coAuthored} co-authored, ${viaPrs} via merged PRs`);
     if (bulk) bulkSkipped.push(`${repo.nameWithOwner} (${bulk})`);
     if (commits) stats.set(repo.nameWithOwner, { commits, additions, deletions });
   });
-
-  // Pull requests you authored, grouped by repo (search covers private repos the token can read).
-  const prs = new Map();
-  let prTotal = 0;
-  cursor = null;
-  for (let page = 0; page < 10; page++) {
-    const d = await gql(`query($q: String!, $cursor: String) {
-      search(type: ISSUE, query: $q, first: 100, after: $cursor) {
-        issueCount pageInfo { hasNextPage endCursor }
-        nodes { ... on PullRequest { repository { nameWithOwner } } }
-      } }`, { q: `is:pr author:${v.login}`, cursor });
-    prTotal = d.search.issueCount;
-    for (const n of d.search.nodes) {
-      const k = n.repository?.nameWithOwner;
-      if (k) prs.set(k, (prs.get(k) ?? 0) + 1);
-    }
-    if (!d.search.pageInfo.hasNextPage) break;
-    cursor = d.search.pageInfo.endCursor;
-  }
 
   const worked = candidates
     .filter((r) => stats.has(r.nameWithOwner))
@@ -157,6 +183,7 @@ async function fetchData() {
   const restricted = v.contributionsCollection.restrictedContributionsCount;
   console.log(`token sees ${repos.size} repos (${[...repos.values()].filter((r) => r.isPrivate).length} private); ` +
     `inspected ${candidates.length}, found your commits in ${worked.length}`);
+  if (teamCredit.length) console.log(`team repos: ${teamCredit.join("; ")}`);
   console.log(`counted: ${[...worked].sort((a, b) => b.commits - a.commits).map((r) => `${r.nameWithOwner} (${r.commits})`).join(", ")}`);
   console.log(`commits this year by repo: ${yearly.map((c) => `${c.repository.nameWithOwner} (${c.contributions.totalCount})`).join(", ") || "none"}`);
   if (restricted) console.warn(`::warning::${restricted} contributions this year are in repos this token cannot read. ` +
