@@ -30,8 +30,6 @@ async function gql(query, variables = {}) {
   return json.data;
 }
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
 async function pool(items, n, fn) {
   let i = 0;
   await Promise.all(Array.from({ length: n }, async () => {
@@ -46,7 +44,7 @@ const REPO_FIELDS = `nameWithOwner name isPrivate isFork pushedAt
 async function fetchData() {
   const base = await gql(`{
     viewer {
-      login name createdAt followers { totalCount }
+      id login name createdAt followers { totalCount }
       contributionsCollection {
         restrictedContributionsCount
         commitContributionsByRepository(maxRepositories: 100) {
@@ -84,31 +82,32 @@ async function fetchData() {
     .sort((a, b) => yearlyNames.has(b.nameWithOwner) - yearlyNames.has(a.nameWithOwner) || new Date(b.pushedAt) - new Date(a.pushedAt))
     .slice(0, CONFIG.maxRepos);
 
-  // Per-repo commits and line counts for you. GitHub answers 202 while it computes these; retry those.
-  const me = v.login.toLowerCase();
+  // Your commits on each repo's default branch, matched to your account (all linked emails),
+  // with per-commit line counts. Unlike /stats/contributors this isn't a lazily built cache.
   const stats = new Map();
-  let pending = candidates;
-  for (let round = 0; round < 10 && pending.length; round++) {
-    if (round) await sleep(Math.min(5000 * round, 20000)); // ~2.5 min in total
-    const retry = [];
-    await pool(pending, 8, async (repo) => {
-      const res = await fetch(`${API}/repos/${repo.nameWithOwner}/stats/contributors`, { headers });
-      if (res.status === 202) return retry.push(repo);
-      if (res.status !== 200) return;
-      const all = await res.json();
-      const mine = all.find((c) => c.author?.login?.toLowerCase() === me);
-      if (!mine) return;
-      const sum = (weeks, k) => weeks.reduce((s, w) => s + w[k], 0);
-      const added = sum(mine.weeks, "a");
-      stats.set(repo.nameWithOwner, {
-        commits: mine.total,
-        additions: added,
-        deletions: sum(mine.weeks, "d"),
-      });
-    });
-    pending = retry;
-  }
-  const stillPending = pending;
+  const failed = [];
+  await pool(candidates, 4, async (repo) => {
+    const [owner, name] = repo.nameWithOwner.split("/");
+    let commits = 0, additions = 0, deletions = 0, after = null;
+    try {
+      for (let page = 0; page < 30; page++) {
+        const d = await gql(`query($owner: String!, $name: String!, $author: ID!, $after: String) {
+          repository(owner: $owner, name: $name) { defaultBranchRef { target { ... on Commit {
+            history(first: 100, after: $after, author: {id: $author}) {
+              totalCount pageInfo { hasNextPage endCursor } nodes { additions deletions }
+            } } } } } }`, { owner, name, author: v.id, after });
+        const h = d.repository?.defaultBranchRef?.target?.history;
+        if (!h) break; // empty repo
+        commits = h.totalCount;
+        for (const n of h.nodes) { additions += n.additions; deletions += n.deletions; }
+        if (!h.pageInfo.hasNextPage) break;
+        after = h.pageInfo.endCursor;
+      }
+    } catch (e) {
+      failed.push(`${repo.nameWithOwner}: ${e.message.slice(0, 120)}`);
+    }
+    if (commits) stats.set(repo.nameWithOwner, { commits, additions, deletions });
+  });
 
   // Pull requests you authored, grouped by repo (search covers private repos the token can read).
   const prs = new Map();
@@ -140,11 +139,7 @@ async function fetchData() {
   console.log(`commits this year by repo: ${yearly.map((c) => `${c.repository.nameWithOwner} (${c.contributions.totalCount})`).join(", ") || "none"}`);
   if (restricted) console.warn(`::warning::${restricted} contributions this year are in repos this token cannot read. ` +
     "Give the token the `repo` scope and authorize it for your organisation's SSO (Settings > Developer settings > Tokens > Configure SSO).");
-  if (stillPending.length) console.warn(`::warning::GitHub was still computing stats for ${stillPending.length} repos ` +
-    `(${stillPending.map((r) => r.nameWithOwner).join(", ")}); they'll appear on the next run.`);
-  const noMatch = yearly.filter((c) => !stats.has(c.repository.nameWithOwner) && !stillPending.includes(repos.get(c.repository.nameWithOwner)));
-  if (noMatch.length) console.warn(`::warning::No commits attributed to ${v.login} in: ${noMatch.map((c) => c.repository.nameWithOwner).join(", ")}. ` +
-    "If you commit there with another email, add it to your GitHub account (Settings > Emails).");
+  if (failed.length) console.warn(`::warning::Could not read commit history for ${failed.length} repos: ${failed.join("; ")}`);
 
   return {
     login: v.login,
