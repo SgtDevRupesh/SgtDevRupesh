@@ -1,5 +1,5 @@
-<img src="metrics/hero.svg?v=2224708e" alt="Rupesh Prasad, Developer" width="100%">
-<img src="metrics/stats.svg?v=48f7bcff" alt="Lines written, commits, pull requests and repositories" width="100%">
-<img src="metrics/biggest.svg?v=6d19f117" alt="Biggest contributions by lines written" width="100%">
-<img src="metrics/mid.svg?v=e52f860e" alt="Recent work and top languages" width="100%">
-<img src="metrics/bottom.svg?v=4236b417" alt="This year's contributions and teams" width="100%">
+<img src="metrics/hero.svg?v=f0ef0be7" alt="Rupesh Prasad, Developer" width="100%">
+<img src="metrics/stats.svg?v=e2f883ad" alt="Lines written, commits, pull requests and repositories" width="100%">
+<img src="metrics/biggest.svg?v=7882684c" alt="Biggest contributions by lines written" width="100%">
+<img src="metrics/mid.svg?v=11a28f3d" alt="Recent work and top languages" width="100%">
+<img src="metrics/bottom.svg?v=5cb1e021" alt="This year's contributions and teams" width="100%">
