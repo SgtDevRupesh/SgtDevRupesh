@@ -1,5 +1,5 @@
 <img src="metrics/hero.svg?v=dff10893" alt="Rupesh Prasad, Developer" width="100%">
 <img src="metrics/stats.svg?v=2d071f43" alt="Lines written, commits, pull requests and repositories" width="100%">
 <img src="metrics/biggest.svg?v=3ee3a3f6" alt="Biggest contributions by lines written" width="100%">
-<img src="metrics/mid.svg?v=74f6b6b5" alt="Recent work and top languages" width="100%">
-<img src="metrics/bottom.svg?v=d3410366" alt="This year's contributions and teams" width="100%">
+<img src="metrics/mid.svg?v=3e875181" alt="Recent work and top languages" width="100%">
+<img src="metrics/bottom.svg?v=d5b1e6d3" alt="This year's contributions and teams" width="100%">
